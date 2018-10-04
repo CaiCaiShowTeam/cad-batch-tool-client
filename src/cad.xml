@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cad>
+	<simpleDoc number="图纸代号/外购件图号" name="图纸名称" source="自制件/外购件"> <!-- number:Windchill代号;name:Windchill零部件名称; -->
+		<materialModel>原材料规格/外构件规格</materialModel> <!-- Windchill原材料规格 -->
+		<materialNum>原材料代码/图纸代号</materialNum> <!-- Windchill原材料物料编码 -->
+		<partSize>零件尺寸</partSize> <!-- source为自制件时，无该属性 -->
+		<unitModel>机组型号</unitModel>
+		<weight>重量</weight>
+		<proportion>比例</proportion> <!-- Windchill中无对应属性 -->
+		<size>图幅</size>
+		<pageIndex>页码</pageIndex> <!-- Windchill中无对应属性 -->
+		<pageSize>总页码</pageSize> <!-- Windchill中无对应属性 -->
+		<keyIdentity>关键件标识</keyIdentity>
+		<partType>零部件类型</partType> <!-- source为外购件时，无该属性 -->
+		<attachment>
+			<absolutePath>C://1.dwg</absolutePath>
+		</attachment>
+		<attachment>
+			<absolutePath>C://2.pdf</absolutePath>
+		</attachment>
+	</simpleDoc>
+	<simpleDoc number="图纸代号/外购件图号" name="图纸名称" source="自制件/外购件"> <!-- number:Windchill代号;name:Windchill零部件名称; -->
+		<materialModel>原材料规格/外构件规格</materialModel> <!-- Windchill原材料规格 -->
+		<materialNum>原材料代码/图纸代号</materialNum> <!-- Windchill原材料物料编码 -->
+		<partSize>零件尺寸</partSize> <!-- source为自制件时，无该属性 -->
+		<unitModel>机组型号</unitModel>
+		<weight>重量</weight>
+		<proportion>比例</proportion> <!-- Windchill中无对应属性 -->
+		<size>图幅</size>
+		<pageIndex>页码</pageIndex> <!-- Windchill中无对应属性 -->
+		<pageSize>总页码</pageSize> <!-- Windchill中无对应属性 -->
+		<keyIdentity>关键件标识</keyIdentity>
+		<partType>零部件类型</partType> <!-- source为外购件时，无该属性 -->
+		<attachment>
+			<absolutePath>C://1.dwg</absolutePath>
+		</attachment>
+		<attachment>
+			<absolutePath>C://2.pdf</absolutePath>
+		</attachment>
+	</simpleDoc>
+</cad>
