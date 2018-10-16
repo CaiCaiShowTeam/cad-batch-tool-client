@@ -13,12 +13,13 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.log4j.Logger;
 
-import com.bplead.cad.bean.SimpleContainer;
+import com.bplead.cad.bean.SimplePdmLinkProduct;
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.client.Temporary;
 import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.Attachment;
 import com.bplead.cad.bean.io.AttachmentModel;
+import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.CustomPrompt;
 
 import priv.lee.cad.util.ClientAssert;
@@ -29,11 +30,9 @@ public class ClientUtils extends ClientInstanceUtils {
 
 	public static StartArguments args = new StartArguments();
 	private static final int BUFFER_SIZE = 2 * 1024;
-	private final static String CAD_PRIMARY_SUFFIX = "wt.document.primary.file.suffix";
+	private final static String CAD_PRIMARY_SUFFIX = "wt.caddoc.primary.file.suffix";
 	public static String cadPrimarySuffix = PropertiesUtils.readProperty(CAD_PRIMARY_SUFFIX);
-	private final static String CAPP_PRIMARY_SUFFIX = "capp.document.primary.file.suffix";
-	public static String cappPrimarySuffix = PropertiesUtils.readProperty(CAPP_PRIMARY_SUFFIX);
-	private static final String CONFIG_SUFFIX = "wt.document.config.file.suffix";
+	private static final String CONFIG_SUFFIX = "wt.caddoc.config.file.suffix";
 	public static String configSuffix = PropertiesUtils.readProperty(CONFIG_SUFFIX);
 	private static final Logger logger = Logger.getLogger(ClientUtils.class);
 	private static final String OID = "oid";
@@ -50,11 +49,11 @@ public class ClientUtils extends ClientInstanceUtils {
 		return attachments;
 	}
 
-//	public static boolean checkin(Document document) {
-//		ClientAssert.notNull(document, "Document is required");
-//		return invoke(RemoteMethod.CHECKIN, new Class<?>[] { Document.class }, new Object[] { document },
-//				Boolean.class);
-//	}
+	public static boolean checkin(Documents documents) {
+		ClientAssert.notNull(documents, "documents is required");
+		return invoke(RemoteMethod.CHECKIN, new Class<?>[] { Documents.class }, new Object[] { documents },
+				Boolean.class);
+	}
 
 //	public static DataContent checkoutAndDownload(List<SimpleDocument> documents) {
 //		ClientAssert.notEmpty(documents, "Documents is requried");
@@ -93,14 +92,14 @@ public class ClientUtils extends ClientInstanceUtils {
 		return null;
 	}
 
-	public static SimpleFolder getSimpleFolders(SimpleContainer container) {
+	public static SimpleFolder getSimpleFolders(SimplePdmLinkProduct container) {
 		ClientAssert.notNull(container, "container is requried");
-		return invoke(RemoteMethod.GET_SIMPLE_FOLDERS, new Class<?>[] { SimpleContainer.class },
+		return invoke(RemoteMethod.GET_SIMPLE_FOLDERS, new Class<?>[] { SimplePdmLinkProduct.class },
 				new Object[] {container}, SimpleFolder.class);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<SimpleContainer> getSimplePdmLinkProducts() {
+	public static List<SimplePdmLinkProduct> getSimplePdmLinkProducts() {
 		return invoke(RemoteMethod.GET_SIMPLE_CONTAINERS, null, null, List.class);
 	}
 
@@ -114,7 +113,7 @@ public class ClientUtils extends ClientInstanceUtils {
 			if (file.isDirectory()) {
 				open(file);
 			} else {
-				if (file.getName().endsWith(cappPrimarySuffix) || file.getName().endsWith(cadPrimarySuffix)) {
+				if (file.getName().endsWith(cadPrimarySuffix)) {
 					try {
 						Desktop.getDesktop().open(file);
 					} catch (IOException e) {
