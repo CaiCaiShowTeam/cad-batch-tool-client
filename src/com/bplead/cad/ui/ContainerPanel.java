@@ -55,8 +55,6 @@ public class ContainerPanel extends AbstractPanel {
     @Override
     public void initialize() {
 	
-//	setLayout (new BoxLayout(this, BoxLayout.Y_AXIS));
-	
 	logger.info ("initialize " + PDMLinkProductPanel.class + "...");
 	pdmlinkProductPanel = new PDMLinkProductPanel (null);
 	add (pdmlinkProductPanel);

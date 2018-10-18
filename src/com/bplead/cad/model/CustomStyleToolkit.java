@@ -1,110 +1,29 @@
 package com.bplead.cad.model;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import priv.lee.cad.model.Callback;
+import com.bplead.cad.bean.constant.RemoteMethod;
+
 import priv.lee.cad.model.impl.DefaultStyleToolkit;
-import priv.lee.cad.util.ClientAssert;
 
 public class CustomStyleToolkit extends DefaultStyleToolkit {
 
-    public class CancleCheckoutListener implements ActionListener, Callback {
-
-	private Callback callback;
-
-	public CancleCheckoutListener(Callback callback) {
-	    this.callback = callback;
-	}
-
+    public class ManualListener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    // processor cancle checkout
-	    ClientAssert.isTrue (false,"CancleCheckoutListener callback required");
-	}
-
-	@Override
-	public void call(Object object) {
-
-	}
-    }
-
-    public class CheckoutAndDownloadListener implements ActionListener, Callback {
-
-	private Callback callback;
-
-	public CheckoutAndDownloadListener(Callback callback) {
-	    this.callback = callback;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    // processor checkout and docwnload
-	    ClientAssert.isTrue (false,"CheckoutAndDownloadListener callback required");
-	}
-
-	@Override
-	public void call(Object object) {
-
-	}
-    }
-
-    public class ClearActionListener implements ActionListener {
-
-	private Callback callback;
-
-	public ClearActionListener(Callback callback) {
-	    this.callback = callback;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    // clear details info TODO
-	    ClientAssert.isTrue (false,"ClearActionListener callback required");
-	}
-    }
-
-    public class ExportActionListener implements ActionListener, Callback {
-
-	private Callback callback;
-
-	public ExportActionListener(Callback callback) {
-	    this.callback = callback;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    startExportDetailsDialog (callback);
-	}
-
-	@Override
-	public void call(Object object) {
-
-	}
-    }
-
-    public class ManualListener implements ActionListener, Callback {
-
-	private Callback callback;
-
-	public ManualListener(Callback callback) {
-	    this.callback = callback;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-	    // processor help
-	    ClientAssert.isTrue (false,"ManualListener callback required");
-	}
-
-	@Override
-	public void call(Object object) {
-
+	    try {
+		Runtime.getRuntime ().exec ("cmd /c start https://news.sina.com.cn/");
+	    }
+	    catch(IOException ee) {
+		ee.printStackTrace ();
+	    }
 	}
     }
 
@@ -127,11 +46,7 @@ public class CustomStyleToolkit extends DefaultStyleToolkit {
     private static final String MANUAL_MENU_ITEM = "munu.help.item1";
     private static final String OPTION_MENU = "menu.option";
     private static final String QUIT_MENU_ITEM = "menu.file.item1";
-    private Callback callback;
-
-    public CustomStyleToolkit(Callback callback) {
-	this.callback = callback;
-    }
+    private HashMap<String, ActionListener> listenerMap;
 
     public JMenu buildFileMenu() {
 	JMenu file = new JMenu (resourceMap.getString (FILE_MENU));
@@ -142,12 +57,12 @@ public class CustomStyleToolkit extends DefaultStyleToolkit {
 	file.add (quit);
 
 	JMenuItem clearDetails = new JMenuItem (resourceMap.getString (CLEARDETAILS_MENU_ITEM));
-	clearDetails.addActionListener (new ClearActionListener (callback));
+	clearDetails.addActionListener (listenerMap.get (RemoteMethod.CLEAR_DETAIL_LISTENNER));
 	file.addSeparator ();
 	file.add (clearDetails);
 
 	JMenuItem exportDetails = new JMenuItem (resourceMap.getString (EXPORTDETAILS_MENU_ITEM));
-	exportDetails.addActionListener (new ExportActionListener (callback));
+	exportDetails.addActionListener (listenerMap.get (RemoteMethod.EXPORT_DETAIL_LISTENNER));
 	file.addSeparator ();
 	file.add (exportDetails);
 	return file;
@@ -157,12 +72,12 @@ public class CustomStyleToolkit extends DefaultStyleToolkit {
 	JMenu help = new JMenu (resourceMap.getString (HELP_MENU));
 	help.getPopupMenu ().setLightWeightPopupEnabled (false);
 	JMenuItem manual = new JMenuItem (resourceMap.getString (MANUAL_MENU_ITEM));
-	manual.addActionListener (new ManualListener (callback));
+	manual.addActionListener (new ManualListener ());
 	help.add (manual);
 	return help;
     }
 
-    public JMenu buildOptionMenu(ActionListener checkinListener, ActionListener checkoutListener) {
+    public JMenu buildOptionMenu(ActionListener checkinListener, ActionListener checkoutAndDownloadListener) {
 	JMenu option = new JMenu (resourceMap.getString (OPTION_MENU));
 	option.getPopupMenu ().setLightWeightPopupEnabled (false);
 
@@ -173,19 +88,19 @@ public class CustomStyleToolkit extends DefaultStyleToolkit {
 	option.add (checkin);
 
 	JMenuItem checkout = new JMenuItem (resourceMap.getString (CHECKOUT_MENU_ITEM));
-	if (checkoutListener != null) {
-	    checkout.addActionListener (checkoutListener);
-	}
+	checkout.addActionListener (listenerMap.get (RemoteMethod.CHECKOUT_LISTENNER));
 	option.addSeparator ();
 	option.add (checkout);
 
 	JMenuItem checkoutAndDownload = new JMenuItem (resourceMap.getString (CHECKOUT_DOWNLOAD_MENU_ITEM));
-	checkoutAndDownload.addActionListener (new CheckoutAndDownloadListener (callback));
+	if (checkoutAndDownloadListener != null) {
+	    checkoutAndDownload.addActionListener (checkoutAndDownloadListener);
+	}
 	option.addSeparator ();
 	option.add (checkoutAndDownload);
 
 	JMenuItem cancleCheckout = new JMenuItem (resourceMap.getString (CANCLE_CHECKOUT_MENU_ITEM));
-	cancleCheckout.addActionListener (new CancleCheckoutListener (callback));
+	cancleCheckout.addActionListener (listenerMap.get (RemoteMethod.UNDO_CHECKOUT_LISTENNER));
 	option.addSeparator ();
 	option.add (cancleCheckout);
 	return option;
@@ -204,14 +119,7 @@ public class CustomStyleToolkit extends DefaultStyleToolkit {
 	return menuBar;
     }
 
-    public void startExportDetailsDialog(Callback callback) {
-	EventQueue.invokeLater (new Runnable () {
-	    public void run() {
-		// export details TODO
-		// PreferencesDialog dialog = new PreferencesDialog(container);
-		// dialog.activate();
-		ClientAssert.isTrue (false,"startExportDetailsDialog callback required");
-	    }
-	});
+    public void setListenerMap(HashMap<String, ActionListener> listenerMap) {
+	this.listenerMap = listenerMap;
     }
 }

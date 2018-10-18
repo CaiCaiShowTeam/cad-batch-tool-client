@@ -50,7 +50,7 @@ public class ClientUtils extends ClientInstanceUtils {
 	for (Attachment attachment : attachments) {
 	    File file = new File (attachment.getAbsolutePath ());
 	    attachment.setName (file.getName ());
-	    attachment.setPrimary (file.getName ().endsWith (primarySuffix));
+	    attachment.setPrimary (file.getName ().toLowerCase ().endsWith (primarySuffix));
 	}
 	return attachments;
     }

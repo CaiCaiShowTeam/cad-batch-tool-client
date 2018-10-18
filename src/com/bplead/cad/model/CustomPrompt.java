@@ -57,4 +57,10 @@ public class CustomPrompt extends StandardPrompt {
 	public static final String URL_NULL = "urlNull";
 
 	public static final String USER_NULL = "userNull";
+	
+	public static final String HAS_CHECKOUT = "hasCheckout";
+	
+	public static final String NOT_CHECKOUT = "notCheckout";
+	
+	public static final String NO_PERSISTENCE = "noPersistence";
 }
