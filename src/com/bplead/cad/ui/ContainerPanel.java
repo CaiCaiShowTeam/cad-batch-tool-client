@@ -25,14 +25,20 @@ import priv.lee.cad.util.ClientAssert;
 public class ContainerPanel extends AbstractPanel {
 
     private static final long serialVersionUID = 1442969218942586007L;
+    private final Logger logger = Logger.getLogger (ContainerPanel.class);
     private final String BUTTON_ICON = "folder.search.icon";
     private final String EMPTY_FOLDER = "folder.empty.prompt";
     private final String EMPTY_PDMLINKPRODUCT = "pdm.empty.prompt";
     private final String FOLDER_PROMPT = "folder.prompt";
     private final String FOLDER_TITLE = "folder.title";
-    private final Logger logger = Logger.getLogger (ContainerPanel.class);
     private final String PDM_PROMPT = "pdm.prompt";
     private final String PDM_TITLE = "pdm.title";
+    private final String PDM_ALL = "pdm.all";
+    private final String PDM_CHECK = "pdm.check";
+    private final String PDM_CLEAR = "pdm.clear";
+    private final String FOLDER_ALL = "folder.all";
+    private final String FOLDER_CHECK = "folder.check";
+    private final String FOLDER_CLEAR = "folder.clear";
     public PDMLinkProductPanel pdmlinkProductPanel;
     public SubFolderPanel subFolderPanel;
 
@@ -48,6 +54,9 @@ public class ContainerPanel extends AbstractPanel {
 
     @Override
     public void initialize() {
+	
+//	setLayout (new BoxLayout(this, BoxLayout.Y_AXIS));
+	
 	logger.info ("initialize " + PDMLinkProductPanel.class + "...");
 	pdmlinkProductPanel = new PDMLinkProductPanel (null);
 	add (pdmlinkProductPanel);
@@ -69,7 +78,7 @@ public class ContainerPanel extends AbstractPanel {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-//	    new PdmLinkProductChooseDialog (this).activate ();
+	    new PdmLinkProductChooseDialog (this).activate ();
 	}
 
 	@Override
@@ -85,11 +94,6 @@ public class ContainerPanel extends AbstractPanel {
 
 	public SimplePdmLinkProduct getProduct() {
 	    return product;
-	}
-
-	@Override
-	protected String setButtonText() {
-	    return null;
 	}
 
 	@Override
@@ -109,6 +113,21 @@ public class ContainerPanel extends AbstractPanel {
 	protected String setTitle() {
 	    return getResourceMap ().getString (PDM_TITLE);
 	}
+
+	@Override
+	protected String setButtonTextAll() {
+	    return PDM_ALL;
+	}
+
+	@Override
+	protected String setButtonTextCheck() {
+	    return PDM_CHECK;
+	}
+
+	@Override
+	protected String setButtonTextClear() {
+	    return PDM_CLEAR;
+	}
     }
 
     abstract class SimpleButtonSetPanel<T> extends AbstractPanel implements ActionListener, Callback {
@@ -116,7 +135,7 @@ public class ContainerPanel extends AbstractPanel {
 	private static final long serialVersionUID = -5690721799689305895L;
 	private final double BUTTON_PROPORTION = 0.3d;
 	private final double HEIGHT_PROPORTION = 0.3d;
-	private final double LABEL_PROPORTION = 0.15d;
+	private final double LABEL_PROPORTION = 0.1d;
 	private T object;
 	public PromptTextField text;
 	private final double TEXT_PROPORTION = 0.65d;
@@ -129,6 +148,10 @@ public class ContainerPanel extends AbstractPanel {
 	    BigDecimal width = new BigDecimal (getPreferredSize ().height)
 		    .multiply (new BigDecimal (BUTTON_PROPORTION));
 	    return new Dimension (width.intValue (),width.intValue ());
+	}
+	
+	private Dimension getButtonPrerredSizeOther() {
+	    return new Dimension (100,40);
 	}
 
 	@Override
@@ -145,7 +168,7 @@ public class ContainerPanel extends AbstractPanel {
 	public void initialize() {
 	    logger.info ("modify " + getClass () + " to flow layout...");
 	    setLayout (new FlowLayout (FlowLayout.LEFT));
-
+	    
 	    logger.info ("initialize " + getClass () + "  content...");
 	    // ~ initialize content
 	    setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),setTitle (),
@@ -156,7 +179,14 @@ public class ContainerPanel extends AbstractPanel {
 	    text = PromptTextField.newInstance (setPrompt (),setText (object),dimension);
 	    add (text);
 
-	    add (new OptionPanel (Arrays.asList (new Option (null,BUTTON_ICON,this,getButtonPrerredSize ()))));
+	    //all
+	    Option setAll = new Option (setButtonTextAll (),null,this,getButtonPrerredSizeOther ());
+	    //check point
+	    Option setCheck = new Option (setButtonTextCheck(),null,this,getButtonPrerredSizeOther ());
+	    //clear
+	    Option setClear = new Option (setButtonTextClear(),null,this,getButtonPrerredSizeOther ());
+	    
+	    add (new OptionPanel (Arrays.asList (new Option (null,BUTTON_ICON,this,getButtonPrerredSize ()),setAll,setCheck,setClear)));
 	}
 
 	protected void refresh(String text) {
@@ -165,7 +195,11 @@ public class ContainerPanel extends AbstractPanel {
 	    validate ();
 	}
 
-	protected abstract String setButtonText();
+	protected abstract String setButtonTextAll();
+	
+	protected abstract String setButtonTextCheck();
+	
+	protected abstract String setButtonTextClear();
 
 	protected abstract String setPrompt();
 
@@ -204,11 +238,6 @@ public class ContainerPanel extends AbstractPanel {
 	}
 
 	@Override
-	protected String setButtonText() {
-	    return null;
-	}
-
-	@Override
 	protected String setPrompt() {
 	    return getResourceMap ().getString (FOLDER_PROMPT);
 	}
@@ -224,6 +253,21 @@ public class ContainerPanel extends AbstractPanel {
 	@Override
 	protected String setTitle() {
 	    return getResourceMap ().getString (FOLDER_TITLE);
+	}
+
+	@Override
+	protected String setButtonTextAll() {
+	    return FOLDER_ALL;
+	}
+
+	@Override
+	protected String setButtonTextCheck() {
+	    return FOLDER_CHECK;
+	}
+
+	@Override
+	protected String setButtonTextClear() {
+	    return FOLDER_CLEAR;
 	}
     }
 }
