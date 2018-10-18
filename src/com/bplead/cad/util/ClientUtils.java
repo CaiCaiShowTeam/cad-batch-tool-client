@@ -83,13 +83,15 @@ public class ClientUtils extends ClientInstanceUtils {
 		Boolean.class);
     }
     
-    public static List<?> undoCheckout(Documents documents) {
+    @SuppressWarnings("unchecked")
+    public static List<SimpleDocument> undoCheckout(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");
 	return invoke (RemoteMethod.UNDO_CHECKOUT,new Class<?> [] { Documents.class },new Object [] { documents },
 		List.class);
     }
     
-    public static List<?> checkout(Documents documents) {
+    @SuppressWarnings("unchecked")
+    public static List<SimpleDocument> checkout(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");
 	return invoke (RemoteMethod.CHECKOUT,new Class<?> [] { Documents.class },new Object [] { documents },
 		List.class);
