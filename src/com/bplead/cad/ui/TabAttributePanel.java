@@ -1,10 +1,12 @@
 package com.bplead.cad.ui;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JTabbedPane;
 
 import com.bplead.cad.bean.io.CadDocument;
@@ -47,7 +49,7 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
     }
 
     private double getHorizontalProportion() {
-	return 0.96d;
+	return 0.495d;
     }
 
     @Override
@@ -56,7 +58,7 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
     }
 
     private double getVerticalProportion() {
-	return 0.45d;
+	return 0.85d;
     }
 
     public void initComponents() {
@@ -71,6 +73,8 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
 
     @Override
     public void initialize() {
+	setBorder (BorderFactory.createLineBorder (Color.RED));
+
 	List<Document> documentL = documents.getDocuments ();
 	if (documentL == null || documentL.isEmpty ()) {
 	    return;
@@ -78,12 +82,11 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
 
 	for (Document document : documentL) {
 	    BasicAttributePanel attributePanel = new BasicAttributePanel (document);
-//	    attributePanel.setAutoResizeOff (true);
-//	    attributePanel.setVerticalProportion (0.87d);
-//	    attributePanel.setHorizontalProportion (0.98d);
-	    
-//	    String documentNumber = StringUtils.isEmpty (document.getEditEnable ()) ? ((CadDocument)document.getObject ()).getNumber (): document.getNumber ();
-	    String documentNumber = ((CadDocument)document.getObject ()).getNumber ();
+
+	    // String documentNumber = StringUtils.isEmpty
+	    // (document.getEditEnable ()) ? ((CadDocument)document.getObject
+	    // ()).getNumber (): document.getNumber ();
+	    String documentNumber = ( (CadDocument) document.getObject () ).getNumber ();
 	    addTab (documentNumber,attributePanel);
 	}
     }

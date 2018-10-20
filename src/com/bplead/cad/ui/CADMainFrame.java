@@ -1,6 +1,7 @@
 package com.bplead.cad.ui;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
@@ -32,6 +34,103 @@ import priv.lee.cad.util.PropertiesUtils;
 import priv.lee.cad.util.XmlUtils;
 
 public class CADMainFrame extends AbstractFrame implements Callback {
+
+    private static final long serialVersionUID = -1719424691262349744L;
+
+    private final String CAD_REPOSITORY = "cad.xml.repository";
+
+    protected CadTablePanel cadTablePanel;
+
+    protected DetailTextAreaPanel detailTextAreaPanel;
+
+    private Documents documents;
+
+    private final Logger logger = Logger.getLogger (CADMainFrame.class);
+
+    protected TabAttributePanel tabAttributePanel;
+
+    protected CustomStyleToolkit toolkit = new CustomStyleToolkit ();
+
+    protected WestPanel westPanel;
+
+    public CADMainFrame() {
+	super (CADMainFrame.class);
+	setToolkit (toolkit);
+    }
+
+    @Override
+    public void call(Object object) {
+	reload ();
+    }
+
+    @Override
+    public double getHorizontalProportion() {
+	return 0.6d;
+    }
+
+    private File getRepository() {
+	if (ClientUtils.temprary == null || !ClientUtils.getTemporaryFile ().exists ()) {
+	    return null;
+	}
+	return new File (ClientUtils.getTemporaryDirectory () + PropertiesUtils.readProperty (CAD_REPOSITORY));
+    }
+
+    @Override
+    public double getVerticalProportion() {
+	return 0.99d;
+    }
+
+    private void initCAD() {
+	if (getRepository () == null) {
+	    // toolkit.startPreferencesDialog (this);
+	    dispose ();
+	} else {
+	    File xml = getRepository ();
+	    Debug.P ("xml file is -> " + xml);
+	    ClientAssert.notNull (xml,"CAD tool initialize failed.Please check file/cad.xml"
+		    + PropertiesUtils.readProperty (CAD_REPOSITORY) + " is exsits");
+	    CadDocuments cadDocuments = XmlUtils.read (xml,CadDocuments.class);
+	    logger.debug ("xml data object cadDocuments:" + cadDocuments);
+	    this.documents = ClientUtils.initialize (cadDocuments);
+	    Debug.P ("merge plm data result is -> " + documents);
+	}
+    }
+
+    @Override
+    public void initialize() {
+	logger.info ("initialize " + getClass () + " document...");
+	initCAD ();
+	if (documents == null) {
+	    return;
+	}
+	logger.info ("initialize " + getClass () + " listenner...");
+	// init manu action listenner
+	HashMap<String, ActionListener> listenerMap = new HashMap<String, ActionListener> ();
+	listenerMap.put (RemoteMethod.CLEAR_DETAIL_LISTENNER,new ClearDetailActionListenner ());
+	listenerMap.put (RemoteMethod.EXPORT_DETAIL_LISTENNER,new ExportDetailActionListenner ());
+	listenerMap.put (RemoteMethod.UNDO_CHECKOUT_LISTENNER,new UndoCheckoutActionListener (this));
+	listenerMap.put (RemoteMethod.CHECKOUT_LISTENNER,new CheckoutActionListener (this));
+
+	toolkit.setListenerMap (listenerMap);
+
+	logger.info ("initialize " + getClass () + " menu bar...");
+	setJMenuBar (
+		toolkit.getStandardMenuBar (new CheckinActionListenner (),new CheckoutAndDownloadActionListenner ()));
+	logger.info ("initialize " + getClass () + " container panel...");
+	// init layout borderLayout
+	getContentPane ().setLayout (new BorderLayout (5,10));
+
+	westPanel = new WestPanel (documents);
+	getContentPane ().add (westPanel,BorderLayout.WEST);
+
+	logger.info ("initialize " + getClass () + " TabAttributePanel panel ...");
+	tabAttributePanel = new TabAttributePanel (documents);
+	getContentPane ().add (tabAttributePanel,BorderLayout.EAST);
+
+	logger.info ("initialize " + getClass () + " Detail jtextarea panel ...");
+	detailTextAreaPanel = new DetailTextAreaPanel ();
+	getContentPane ().add (detailTextAreaPanel,BorderLayout.SOUTH);
+    }
 
     public class CheckinActionListenner implements ActionListener {
 	@Override
@@ -309,7 +408,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	protected void done() {
-	    //TODO 1.设置操作可见性 2.刷新面板
+	    // TODO 1.设置操作可见性 2.刷新面板
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString ("completed undocheckout"),100));
 	}
 
@@ -320,106 +419,6 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 		detailTextAreaPanel.println (progress.getPrompt ());
 	    }
 	}
-    }
-
-    private static final long serialVersionUID = -1719424691262349744L;
-
-    private final String CAD_REPOSITORY = "cad.xml.repository";
-
-    protected ContainerPanel containerPanel;
-
-    protected DetailTextAreaPanel detailTextAreaPanel;
-
-    private Documents documents;
-
-    // protected DetailAttributePanel detailAttributePanel;
-    private final Logger logger = Logger.getLogger (CADMainFrame.class);
-
-    protected TabAttributePanel tabAttributePanel;
-
-    protected CustomStyleToolkit toolkit = new CustomStyleToolkit ();
-
-    public CADMainFrame() {
-	super (CADMainFrame.class);
-	setToolkit (toolkit);
-    }
-
-    @Override
-    public void call(Object object) {
-	reload ();
-    }
-
-    @Override
-    public double getHorizontalProportion() {
-	return 0.6d;
-    }
-
-    private File getRepository() {
-	if (ClientUtils.temprary == null || !ClientUtils.getTemporaryFile ().exists ()) {
-	    return null;
-	}
-	return new File (ClientUtils.getTemporaryDirectory () + PropertiesUtils.readProperty (CAD_REPOSITORY));
-    }
-
-    @Override
-    public double getVerticalProportion() {
-	return 0.99d;
-    }
-
-    private void initCAD() {
-	if (getRepository () == null) {
-	    // toolkit.startPreferencesDialog (this);
-	    dispose ();
-	} else {
-	    File xml = getRepository ();
-	    Debug.P ("xml file is -> " + xml);
-	    ClientAssert.notNull (xml,"CAD tool initialize failed.Please check file/cad.xml"
-		    + PropertiesUtils.readProperty (CAD_REPOSITORY) + " is exsits");
-	    CadDocuments cadDocuments = XmlUtils.read (xml,CadDocuments.class);
-	    logger.debug ("xml data object cadDocuments:" + cadDocuments);
-	    this.documents = ClientUtils.initialize (cadDocuments);
-	    Debug.P ("merge plm data result is -> " + documents);
-	}
-    }
-
-    @Override
-    public void initialize() {
-	logger.info ("initialize " + getClass () + " document...");
-	initCAD ();
-	if (documents == null) {
-	    return;
-	}
-	logger.info ("initialize " + getClass () + " listenner...");
-	// init manu action listenner
-	HashMap<String, ActionListener> listenerMap = new HashMap<String, ActionListener> ();
-	listenerMap.put (RemoteMethod.CLEAR_DETAIL_LISTENNER,new ClearDetailActionListenner ());
-	listenerMap.put (RemoteMethod.EXPORT_DETAIL_LISTENNER,new ExportDetailActionListenner ());
-	listenerMap.put (RemoteMethod.UNDO_CHECKOUT_LISTENNER,new UndoCheckoutActionListener (this));
-	listenerMap.put (RemoteMethod.CHECKOUT_LISTENNER,new CheckoutActionListener (this));
-
-	toolkit.setListenerMap (listenerMap);
-
-	logger.info ("initialize " + getClass () + " menu bar...");
-	setJMenuBar (toolkit.getStandardMenuBar (new CheckinActionListenner (),new CheckoutAndDownloadActionListenner ()));
-	logger.info ("initialize " + getClass () + " container panel...");
-	// init layout borderLayout
-	getContentPane ().setLayout (new BorderLayout (5,10));
-
-	containerPanel = new ContainerPanel ();
-	getContentPane ().add (containerPanel,BorderLayout.WEST);
-
-	logger.info ("initialize " + getClass () + " table attribute panel...");
-	// basicAttributePanel = new BasicAttributePanel(cad);
-	// getContentPane().add(basicAttributePanel);
-
-	logger.info ("initialize " + getClass () + " TabAttributePanel panel ...");
-	tabAttributePanel = new TabAttributePanel (documents);
-	getContentPane ().add (tabAttributePanel,BorderLayout.CENTER);
-
-	logger.info ("initialize " + getClass () + " Detail jtextarea panel ...");
-	detailTextAreaPanel = new DetailTextAreaPanel ();
-	getContentPane ().add (detailTextAreaPanel,BorderLayout.SOUTH);
-
     }
 
 }

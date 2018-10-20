@@ -37,27 +37,25 @@ import priv.lee.cad.util.StringUtils;
 public class BasicAttributePanel extends AbstractPanel {
 
     private static final long serialVersionUID = 5723039852386303330L;
+    private final String BUTTON_ICON = "folder.search.icon";
+    private CadDocument cadDocument;
+    private final String DETAIL_BUTTON_ICON = "object.details.icon";
+    private final String EMPTY_FOLDER = "folder.empty.prompt";
+    private final String EMPTY_PDMLINKPRODUCT = "pdm.empty.prompt";
+    private final String FOLDER_PROMPT = "folder.prompt";
     private final double HEIGHT_PROPORTION = 0.1d;
     private final double HGAP_PROPORTION = 0.005d;
     private double labelProportion = 0.08d;
     private final Logger logger = Logger.getLogger (BasicAttributePanel.class);
+    private final String NUMBER_PROMPT = "number.prompt";
+    public NumberPanel numberPanel;
+    private final String PDM_PROMPT = "pdm.prompt";
+    public PDMLinkProductPanel pdmlinkProductPanel;
     private Serializable serializable;// Document
-    private CadDocument cadDocument;
-    private double textProportion = 0.2d;
+    public SubFolderPanel subFolderPanel;
+    private double textProportion = 0.15d;
     private final String TITLE = "title";
     private final double VGAP_PROPORTION = 0.02d;
-    private final String BUTTON_ICON = "folder.search.icon";
-    private final String EMPTY_FOLDER = "folder.empty.prompt";
-    private final String EMPTY_PDMLINKPRODUCT = "pdm.empty.prompt";
-    private final String FOLDER_PROMPT = "folder.prompt";
-    // private final String FOLDER_TITLE = "folder.title";
-    private final String PDM_PROMPT = "pdm.prompt";
-    // private final String PDM_TITLE = "pdm.title";
-    private final String NUMBER_PROMPT = "number.prompt";
-    private final String DETAIL_BUTTON_ICON = "object.details.icon";
-    public PDMLinkProductPanel pdmlinkProductPanel;
-    public SubFolderPanel subFolderPanel;
-    public NumberPanel numberPanel;
 
     public BasicAttributePanel(Serializable serializable) {
 	this.serializable = serializable;
@@ -156,6 +154,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	layout.addComponent (subFolderPanel);
 	layout.addComponent (numberPanel);
 	layout.addComponent (texts).layout (2);
+	
     }
 
     public void setCad(Serializable cad) {
@@ -173,8 +172,8 @@ public class BasicAttributePanel extends AbstractPanel {
     class NumberPanel extends SimpleButtonSetPanel<Document> {
 
 	private static final long serialVersionUID = 5788762488066451045L;
-	private Document document;
 	private CadDocument cadDocument;
+	private Document document;
 
 	public NumberPanel(Document document) {
 	    super (document);
@@ -216,6 +215,11 @@ public class BasicAttributePanel extends AbstractPanel {
 	}
 
 	@Override
+	protected String setIcon() {
+	    return DETAIL_BUTTON_ICON;
+	}
+
+	@Override
 	protected String setPrompt() {
 	    return getResourceMap ().getString (NUMBER_PROMPT);
 	}
@@ -228,11 +232,6 @@ public class BasicAttributePanel extends AbstractPanel {
 	@Override
 	protected String setTitle() {
 	    return null;
-	}
-
-	@Override
-	protected String setIcon() {
-	    return DETAIL_BUTTON_ICON;
 	}
 
     }
@@ -273,6 +272,11 @@ public class BasicAttributePanel extends AbstractPanel {
 	}
 
 	@Override
+	protected String setIcon() {
+	    return BUTTON_ICON;
+	}
+
+	@Override
 	protected String setPrompt() {
 	    return getResourceMap ().getString (PDM_PROMPT);
 	}
@@ -289,26 +293,17 @@ public class BasicAttributePanel extends AbstractPanel {
 	protected String setTitle() {
 	    return null;
 	}
-
-	@Override
-	protected String setIcon() {
-	    return BUTTON_ICON;
-	}
     }
 
     abstract class SimpleButtonSetPanel<T> extends AbstractPanel implements ActionListener, Callback {
 
 	private static final long serialVersionUID = -5690721799689305895L;
-	// private final double BUTTON_PROPORTION = 0.3d;
-	private final double BUTTON_PROPORTION = 0.1d;
-	// private final double HEIGHT_PROPORTION = 0.3d;
-	private final double HEIGHT_PROPORTION = 0.7d;
-	// private final double LABEL_PROPORTION = 0.15d;
-	private final double LABEL_PROPORTION = 0.08d;
+	private final double BUTTON_PROPORTION = 0.7d;
+	private final double HEIGHT_PROPORTION = 0.9d;
+	private final double LABEL_PROPORTION = 0.1d;
 	private T object;
 	public PromptTextField text;
-	// private final double TEXT_PROPORTION = 0.65d;
-	private final double TEXT_PROPORTION = 0.2d;
+	private final double TEXT_PROPORTION = 0.3d;
 
 	public SimpleButtonSetPanel(T object) {
 	    this.object = object;
@@ -333,16 +328,20 @@ public class BasicAttributePanel extends AbstractPanel {
 	@Override
 	public void initialize() {
 	    logger.info ("modify " + getClass () + " to flow layout...");
-	    setLayout (new FlowLayout (FlowLayout.LEFT));
+	    setLayout (new FlowLayout (FlowLayout.CENTER));
 
 	    logger.info ("initialize " + getClass () + "  content...");
 	    // ~ initialize content
 	    setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),setTitle (),
 		    TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont ()));
-
+	    
+//	    setBorder (BorderFactory.createEmptyBorder ()); 
+	    
 	    PromptTextField.PromptTextFieldDimension dimension = PromptTextField.newDimension (getPreferredSize (),
 		    LABEL_PROPORTION,TEXT_PROPORTION,HEIGHT_PROPORTION);
 	    text = PromptTextField.newInstance (setPrompt (),setText (object),dimension);
+	    text.setEditable (false);
+	    
 	    add (text);
 
 	    add (new OptionPanel (Arrays.asList (new Option (null,setIcon (),this,getButtonPrerredSize ()))));
@@ -353,16 +352,16 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	    validate ();
 	}
-
+	
 	protected abstract String setButtonText();
+
+	protected abstract String setIcon();
 
 	protected abstract String setPrompt();
 
 	protected abstract String setText(T object);
 
 	protected abstract String setTitle();
-
-	protected abstract String setIcon();
     }
 
     class SubFolderPanel extends SimpleButtonSetPanel<SimpleFolder> {
@@ -400,6 +399,11 @@ public class BasicAttributePanel extends AbstractPanel {
 	}
 
 	@Override
+	protected String setIcon() {
+	    return BUTTON_ICON;
+	}
+
+	@Override
 	protected String setPrompt() {
 	    return getResourceMap ().getString (FOLDER_PROMPT);
 	}
@@ -415,11 +419,6 @@ public class BasicAttributePanel extends AbstractPanel {
 	@Override
 	protected String setTitle() {
 	    return null;
-	}
-
-	@Override
-	protected String setIcon() {
-	    return BUTTON_ICON;
 	}
     }
 }

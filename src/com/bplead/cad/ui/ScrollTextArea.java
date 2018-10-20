@@ -21,19 +21,24 @@ import priv.lee.cad.model.MiddleAlignGap;
  */
 public class ScrollTextArea extends JComponent {
 
-    private static final long serialVersionUID = 7933930654658273273L;
-
     private static final Logger logger = Logger.getLogger (ScrollTextArea.class);
 
-    private JTextArea textArea;
+    private static final long serialVersionUID = 7933930654658273273L;
 
-    private JScrollPane scrollPane;
+    public static TextAreaDimension newDimension(Dimension parentSize, double textWidthProportion,
+	    double heightProportion) {
+	return new TextAreaDimension (parentSize,textWidthProportion,heightProportion);
+    }
 
     private TextAreaDimension dimension;
 
     private MiddleAlignGap gap = new MiddleAlignGap (5,5);
 
     private LayoutManager layout = new FlowLayout (FlowLayout.LEFT,gap.hGap,gap.vGap);
+
+    private JScrollPane scrollPane;
+
+    private JTextArea textArea;
 
     ScrollTextArea(JScrollPane scrollPane, JTextArea textArea, TextAreaDimension dimension) {
 	this.textArea = textArea;
@@ -43,6 +48,29 @@ public class ScrollTextArea extends JComponent {
 	initialize ();
     }
 
+    public void append(String text) {
+	textArea.append (text);
+	// textArea.paintImmediately(textArea.getX(), textArea.getY(),
+	// textArea.getWidth(), textArea.getHeight());
+	textArea.paintImmediately (textArea.getBounds ());
+    }
+
+    public void clear() {
+	textArea.setText ("");
+    }
+
+    public TextAreaDimension getDimension() {
+	return dimension;
+    }
+
+    public boolean getEditEnable() {
+	return textArea.isEditable ();
+    }
+
+    public String getText() {
+	return textArea.getText ();
+    }
+
     private ScrollTextArea initialize() {
 	setLayout (layout);
 
@@ -50,54 +78,28 @@ public class ScrollTextArea extends JComponent {
 	    if (logger.isDebugEnabled ()) {
 		logger.debug ("dimension is -> " + dimension);
 	    }
-	    textArea.setPreferredSize (new Dimension (dimension.textWidth,dimension.height*3));
+	    textArea.setPreferredSize (new Dimension (dimension.textWidth,dimension.height * 3));
 	}
-	textArea.setLineWrap(true);
+	textArea.setLineWrap (true);
 	textArea.setCaretPosition (textArea.getText ().length ());
-	
+
 	scrollPane.setViewportView (textArea);
-	scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); 
-	scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED); 
+	scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+	scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	scrollPane.setWheelScrollingEnabled (true);
 	scrollPane.setPreferredSize (new Dimension (dimension.textWidth,dimension.height));
-	
+
 	add (scrollPane);
 
 	return this;
     }
-    
-    public void append (String text) {
-	textArea.append (text);
-//	textArea.paintImmediately(textArea.getX(), textArea.getY(), textArea.getWidth(), textArea.getHeight());
-	textArea.paintImmediately (textArea.getBounds ());
-    }
-    
-    public void clear () {
-	textArea.setText ("");
-    }
-    
-    public boolean getEditEnable () {
-	return textArea.isEditable ();
-    }
-    
-    public void setEditEnable (boolean editEnable) {
-	textArea.setEditable (editEnable);
-    }
-    
-    public String getText () {
-	return textArea.getText ();
-    }
-    
-    public void setDefaultText (String defaultText) {
+
+    public void setDefaultText(String defaultText) {
 	textArea.setText (defaultText);
     }
 
-    public TextAreaDimension getDimension() {
-	return dimension;
-    }
-    
-    public static TextAreaDimension newDimension(Dimension parentSize, double textWidthProportion, double heightProportion) {
-	return new TextAreaDimension (parentSize, textWidthProportion, heightProportion);
+    public void setEditEnable(boolean editEnable) {
+	textArea.setEditable (editEnable);
     }
 
     public static class TextAreaDimension {
