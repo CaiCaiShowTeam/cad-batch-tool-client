@@ -38,7 +38,7 @@ public class WestPanel extends AbstractPanel {
 
     @Override
     public double getVerticalProportion() {
-	return 0.9d;
+	return 0.69d;
     }
 
     @Override

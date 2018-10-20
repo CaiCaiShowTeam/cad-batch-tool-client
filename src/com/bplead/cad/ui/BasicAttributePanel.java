@@ -1,5 +1,6 @@
 package com.bplead.cad.ui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -43,17 +44,20 @@ public class BasicAttributePanel extends AbstractPanel {
     private final String EMPTY_FOLDER = "folder.empty.prompt";
     private final String EMPTY_PDMLINKPRODUCT = "pdm.empty.prompt";
     private final String FOLDER_PROMPT = "folder.prompt";
+    private final String FOLDER_SEARCH_TEXT = "folder.search.text";
     private final double HEIGHT_PROPORTION = 0.1d;
-    private final double HGAP_PROPORTION = 0.005d;
-    private double labelProportion = 0.08d;
+    private final double HGAP_PROPORTION = 0.02d;
+    private double labelProportion = 0.1d;
     private final Logger logger = Logger.getLogger (BasicAttributePanel.class);
     private final String NUMBER_PROMPT = "number.prompt";
     public NumberPanel numberPanel;
+    private final String OBJECT_DETAILS_TEXT = "object.details.text";
     private final String PDM_PROMPT = "pdm.prompt";
+    private final String PDM_SEARCH_TEXT = "pdm.search.text";
     public PDMLinkProductPanel pdmlinkProductPanel;
     private Serializable serializable;// Document
     public SubFolderPanel subFolderPanel;
-    private double textProportion = 0.15d;
+    private double textProportion = 0.3d;
     private final String TITLE = "title";
     private final double VGAP_PROPORTION = 0.02d;
 
@@ -124,7 +128,7 @@ public class BasicAttributePanel extends AbstractPanel {
 
     @Override
     public double getVerticalProportion() {
-	return 0.35d;
+	return 0.4d;
     }
 
     @Override
@@ -134,6 +138,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),
 		getResourceMap ().getString (TITLE),TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,
 		toolkit.getFont ()));
+
 	// new productPanel , new subFolderPanel
 	Container container = ( (Document) serializable ).getContainer ();
 	pdmlinkProductPanel = new PDMLinkProductPanel (container == null ? null : container.getProduct ());
@@ -142,6 +147,8 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	logger.info ("convert to PromptTextField...");
 	List<PromptTextField> texts = conver2Texts ();
+
+	setBorder (BorderFactory.createLineBorder (Color.ORANGE));
 
 	// ~ performance hGap and vGap
 	int hGap = ( (Double) ( getPreferredSize ().width * HGAP_PROPORTION ) ).intValue ();
@@ -154,7 +161,6 @@ public class BasicAttributePanel extends AbstractPanel {
 	layout.addComponent (subFolderPanel);
 	layout.addComponent (numberPanel);
 	layout.addComponent (texts).layout (2);
-	
     }
 
     public void setCad(Serializable cad) {
@@ -207,6 +213,11 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	public SimpleDocument getDocument() {
 	    return document;
+	}
+
+	@Override
+	protected String setBottonText() {
+	    return OBJECT_DETAILS_TEXT;
 	}
 
 	@Override
@@ -267,6 +278,11 @@ public class BasicAttributePanel extends AbstractPanel {
 	}
 
 	@Override
+	protected String setBottonText() {
+	    return PDM_SEARCH_TEXT;
+	}
+
+	@Override
 	protected String setButtonText() {
 	    return null;
 	}
@@ -298,12 +314,12 @@ public class BasicAttributePanel extends AbstractPanel {
     abstract class SimpleButtonSetPanel<T> extends AbstractPanel implements ActionListener, Callback {
 
 	private static final long serialVersionUID = -5690721799689305895L;
-	private final double BUTTON_PROPORTION = 0.7d;
+	private final double BUTTON_PROPORTION = 1.7d;
 	private final double HEIGHT_PROPORTION = 0.9d;
-	private final double LABEL_PROPORTION = 0.1d;
+	private final double LABEL_PROPORTION = 0.2d;
 	private T object;
 	public PromptTextField text;
-	private final double TEXT_PROPORTION = 0.3d;
+	private final double TEXT_PROPORTION = 0.5d;
 
 	public SimpleButtonSetPanel(T object) {
 	    this.object = object;
@@ -312,7 +328,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	private Dimension getButtonPrerredSize() {
 	    BigDecimal width = new BigDecimal (getPreferredSize ().height)
 		    .multiply (new BigDecimal (BUTTON_PROPORTION));
-	    return new Dimension (width.intValue (),width.intValue ());
+	    return new Dimension (width.intValue (),((Double)(getPreferredSize ().height*0.8d)).intValue ());
 	}
 
 	@Override
@@ -328,23 +344,21 @@ public class BasicAttributePanel extends AbstractPanel {
 	@Override
 	public void initialize() {
 	    logger.info ("modify " + getClass () + " to flow layout...");
-	    setLayout (new FlowLayout (FlowLayout.CENTER));
+	    setLayout (new FlowLayout (FlowLayout.LEFT,5,5));
 
 	    logger.info ("initialize " + getClass () + "  content...");
 	    // ~ initialize content
-	    setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),setTitle (),
-		    TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont ()));
-	    
-//	    setBorder (BorderFactory.createEmptyBorder ()); 
-	    
+//	    setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),setTitle (),
+//		    TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont ()));
+
 	    PromptTextField.PromptTextFieldDimension dimension = PromptTextField.newDimension (getPreferredSize (),
 		    LABEL_PROPORTION,TEXT_PROPORTION,HEIGHT_PROPORTION);
 	    text = PromptTextField.newInstance (setPrompt (),setText (object),dimension);
 	    text.setEditable (false);
-	    
+
 	    add (text);
 
-	    add (new OptionPanel (Arrays.asList (new Option (null,setIcon (),this,getButtonPrerredSize ()))));
+	    add (new OptionPanel (Arrays.asList (new Option (setBottonText (),null,this,getButtonPrerredSize ()))));
 	}
 
 	protected void refresh(String text) {
@@ -352,7 +366,9 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	    validate ();
 	}
-	
+
+	protected abstract String setBottonText();
+
 	protected abstract String setButtonText();
 
 	protected abstract String setIcon();
@@ -391,6 +407,11 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	public SimpleFolder getFolder() {
 	    return folder;
+	}
+
+	@Override
+	protected String setBottonText() {
+	    return FOLDER_SEARCH_TEXT;
 	}
 
 	@Override

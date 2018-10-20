@@ -3,9 +3,8 @@
  */
 package com.bplead.cad.ui;
 
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -17,7 +16,6 @@ import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
 
-import priv.lee.cad.model.MiddleAlignGap;
 import priv.lee.cad.model.ResourceMapper;
 import priv.lee.cad.ui.AbstractPanel;
 import priv.lee.cad.util.StringUtils;
@@ -30,16 +28,20 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     private static final long serialVersionUID = 1402990192978044447L;
 
     private static final String TITLE = "title";
+    
+    private final int CHECKHEADERCOLUMN = 0;
+    
+    private final double TABLE_HEIGHT_PROPORTION = 1.05d;
+    
+    private final double SCROLL_HEIGHT_PROPORTION = 0.9d;
+    
+    private final double SCROLL_WIDTH_PROPORTION = 0.97d;
 
     private Documents documents;
 
     private String [] columnNames = { "", "序号", "图纸代号", "对比", "图纸名称", "状况", "产品容器", "文件夹" };
 
     private MutiTable mutiTable;
-
-    // private MiddleAlignGap gap = new MiddleAlignGap (5,5);
-
-    private LayoutManager layout = new FlowLayout (FlowLayout.CENTER);
 
     CadTablePanel(Documents documents) {
 	this.documents = documents;
@@ -52,7 +54,7 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 
     @Override
     public double getVerticalProportion() {
-	return 0.5d;
+	return 0.7d;
     }
 
     public Object [] [] buildTableData() {
@@ -96,8 +98,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 
     @Override
     public void initialize() {
-	// set layout
-	setLayout (layout);
 	// init table model
 	MutiTableModel tableModel = new MutiTableModel (columnNames);
 	// init table data
@@ -114,11 +114,13 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	// set table enabled
 	mutiTable.setEnabled (true);
 	// set checkHeader column
-	mutiTable.setCheckHeaderColumn (0);
+	mutiTable.setCheckHeaderColumn (CHECKHEADERCOLUMN);
 
 	// set jtable dimension
 	mutiTable.setPreferredSize (new Dimension (getPreferredSize ().width,
-		( (Double) ( getPreferredSize ().height * 1.2 ) ).intValue ()));
+		( (Double) ( getPreferredSize ().height * TABLE_HEIGHT_PROPORTION) ).intValue ()));
+	// set jtable border 
+	mutiTable.setBorder (BorderFactory.createLineBorder (Color.CYAN));
 
 	// new jscrollpane and set jtable into
 	JScrollPane scrollPane = new JScrollPane (mutiTable);
@@ -126,8 +128,11 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	scrollPane.setWheelScrollingEnabled (true);
 	// set jscrollpane dimension
-	scrollPane.setPreferredSize (new Dimension (( (Double) ( getPreferredSize ().width * 0.98 ) ).intValue (),
-		( (Double) ( getPreferredSize ().height * 0.9 ) ).intValue ()));
+	scrollPane.setPreferredSize (new Dimension (( (Double) ( getPreferredSize ().width * SCROLL_WIDTH_PROPORTION ) ).intValue (),
+		( (Double) ( getPreferredSize ().height * SCROLL_HEIGHT_PROPORTION ) ).intValue ()));
+	// set jscrollpane border 
+	scrollPane.setBorder (BorderFactory.createLineBorder (Color.ORANGE));
+	
 	// add jscrollpane to panel
 	add (scrollPane);
 

@@ -19,6 +19,7 @@ import priv.lee.cad.model.StyleToolkit;
 import priv.lee.cad.model.TieContainer;
 import priv.lee.cad.model.impl.DefaultStyleToolkit;
 import priv.lee.cad.model.impl.GlobalResourceMap;
+import priv.lee.cad.util.StringUtils;
 
 public class TabAttributePanel extends JTabbedPane implements ResourceMapper, TieContainer {
 
@@ -58,7 +59,7 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
     }
 
     private double getVerticalProportion() {
-	return 0.85d;
+	return 0.69d;
     }
 
     public void initComponents() {
@@ -73,6 +74,7 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
 
     @Override
     public void initialize() {
+
 	setBorder (BorderFactory.createLineBorder (Color.RED));
 
 	List<Document> documentL = documents.getDocuments ();
@@ -81,12 +83,12 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
 	}
 
 	for (Document document : documentL) {
+
 	    BasicAttributePanel attributePanel = new BasicAttributePanel (document);
 
-	    // String documentNumber = StringUtils.isEmpty
-	    // (document.getEditEnable ()) ? ((CadDocument)document.getObject
-	    // ()).getNumber (): document.getNumber ();
-	    String documentNumber = ( (CadDocument) document.getObject () ).getNumber ();
+	    String documentNumber = StringUtils.isEmpty (document.getOid ())
+		    ? ( (CadDocument) document.getObject () ).getNumber ()
+		    : document.getNumber ();
 	    addTab (documentNumber,attributePanel);
 	}
     }

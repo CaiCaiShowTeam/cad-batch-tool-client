@@ -3,10 +3,12 @@
  */
 package com.bplead.cad.ui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.LayoutManager;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -39,6 +41,10 @@ public class ScrollTextArea extends JComponent {
     private JScrollPane scrollPane;
 
     private JTextArea textArea;
+    
+    private final double TEXTAREA_HEIGHT_PROPORTION = 3d;
+    
+    private final double SCROLL_HEIGHT_PROPORTION = 2d;
 
     ScrollTextArea(JScrollPane scrollPane, JTextArea textArea, TextAreaDimension dimension) {
 	this.textArea = textArea;
@@ -72,22 +78,27 @@ public class ScrollTextArea extends JComponent {
     }
 
     private ScrollTextArea initialize() {
+	
 	setLayout (layout);
 
 	if (dimension != null) {
 	    if (logger.isDebugEnabled ()) {
 		logger.debug ("dimension is -> " + dimension);
 	    }
-	    textArea.setPreferredSize (new Dimension (dimension.textWidth,dimension.height * 3));
+	    textArea.setPreferredSize (new Dimension (dimension.textWidth,((Double)(dimension.height * TEXTAREA_HEIGHT_PROPORTION)).intValue ()));
 	}
 	textArea.setLineWrap (true);
 	textArea.setCaretPosition (textArea.getText ().length ());
+	//set textarea border
+	textArea.setBorder (BorderFactory.createLineBorder (Color.BLUE));
 
 	scrollPane.setViewportView (textArea);
 	scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 	scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 	scrollPane.setWheelScrollingEnabled (true);
-	scrollPane.setPreferredSize (new Dimension (dimension.textWidth,dimension.height));
+	scrollPane.setPreferredSize (new Dimension (dimension.textWidth,((Double)(dimension.height * SCROLL_HEIGHT_PROPORTION)).intValue ()));
+	//set scrollPane border
+	scrollPane.setBorder (BorderFactory.createLineBorder (Color.GREEN));
 
 	add (scrollPane);
 

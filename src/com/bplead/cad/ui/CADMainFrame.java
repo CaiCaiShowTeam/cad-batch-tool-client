@@ -1,15 +1,14 @@
 package com.bplead.cad.ui;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
@@ -117,8 +116,11 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	setJMenuBar (
 		toolkit.getStandardMenuBar (new CheckinActionListenner (),new CheckoutAndDownloadActionListenner ()));
 	logger.info ("initialize " + getClass () + " container panel...");
+	
 	// init layout borderLayout
 	getContentPane ().setLayout (new BorderLayout (5,10));
+	
+	getContentPane ().add (new JLabel("你好"),BorderLayout.NORTH);
 
 	westPanel = new WestPanel (documents);
 	getContentPane ().add (westPanel,BorderLayout.WEST);
