@@ -9,6 +9,7 @@ import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
 import com.bplead.cad.bean.io.Attachment;
 import com.bplead.cad.bean.io.CadDocument;
+import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.CustomPrompt;
@@ -51,9 +52,9 @@ public class ValidateUtils {
 	    if (StringUtils.isEmpty (oid)) {
 		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NO_PERSISTENCE);
 	    } else {
-		Boolean editEnable = document.getEditEnable ();
-		if (editEnable != null && !editEnable) {
-		    ClientAssert.isTrue (editEnable,buildPromptSuffix (document) + CustomPrompt.NOT_CHECKOUT);
+		CadStatus cadStatus = document.getCadStatus ();
+		if (cadStatus == CadStatus.CHECK_IN) {
+		    ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NOT_CHECKOUT);
 		} 
 	    }
 	}
@@ -71,9 +72,9 @@ public class ValidateUtils {
  	    if (StringUtils.isEmpty (oid)) {
  		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NO_PERSISTENCE);
  	    } else {
- 		Boolean editEnable = document.getEditEnable ();
- 		if (editEnable != null && editEnable) {
- 		    ClientAssert.isTrue (!editEnable,buildPromptSuffix (document) + CustomPrompt.HAS_CHECKOUT);
+ 		CadStatus cadStatus = document.getCadStatus ();
+ 		if (cadStatus == CadStatus.CHECK_OUT || cadStatus == CadStatus.NOT_EXIST) {
+ 		    ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.HAS_CHECKOUT);
  		} 
  	    }
  	}
@@ -96,11 +97,11 @@ public class ValidateUtils {
     }
     
     public static void validateStatus(Document document) {
-	Boolean editEnable = document.getEditEnable ();
+	CadStatus cadStatus = document.getCadStatus ();
 	//editEnable == null is not persistence
-	if (editEnable == null || editEnable) {
+	if (cadStatus == CadStatus.CHECK_IN || cadStatus == CadStatus.NOT_EXIST) {
 	} else {
-	    ClientAssert.isTrue (editEnable,buildPromptSuffix (document) + CustomPrompt.NOT_CHECKOUT);
+	    ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NOT_CHECKOUT);
 	}
     }
 

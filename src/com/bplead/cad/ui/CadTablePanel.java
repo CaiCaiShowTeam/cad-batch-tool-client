@@ -5,6 +5,7 @@ package com.bplead.cad.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.lang.reflect.Field;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -41,10 +42,10 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 
     private Documents documents;
 
-    private String [] columnNames = { "", "序号", "图纸代号", "对比", "图纸名称", "状况", "产品容器", "文件夹" };
+    private String [] columnNames;
 
     private MutiTable mutiTable;
-
+    
     CadTablePanel(Documents documents) {
 	this.documents = documents;
     }
@@ -86,7 +87,7 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 		    } else if (columnNames[col].equalsIgnoreCase ("图纸名称")) {
 			data[i][col] = cadDocument == null ? document.getName () : cadDocument.getName ();
 		    } else if (columnNames[col].equalsIgnoreCase ("状况")) {
-			data[i][col] = cadDocument == null ? ( document.getEditEnable () ? "检出" : "检入" ) : "";
+			data[i][col] = cadDocument == null ? ( document.getCadStatus ().getDisplayName () ) : "";
 		    } else if (columnNames[col].equalsIgnoreCase ("产品容器")) {
 			data[i][col] = cadDocument == null ? document.getContainer ().getProduct ().getName () : null;
 		    } else if (columnNames[col].equalsIgnoreCase ("文件夹")) {
@@ -97,9 +98,37 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	}
 	return data;
     }
+    
+    public void buildHeaderColumn (Documents documents) {
+//	columnNames = new String[]{ "", "序号", "图纸代号", "对比", "图纸名称", "状况", "产品容器", "文件夹" };
+	
+	Document document = getFirstObjOfList (documents.getDocuments ());
+	if (document != null) {
+	    columnNames = new String[] {};
+	    Field[] fields = document.getClass ().getDeclaredFields();
+	    for (int i = 0; i < fields.length; i++) {
+		Field field = fields[i];
+		field.setAccessible(true);
+		
+	    }
+	    
+	}
+    }
+    
+    public <T> T getFirstObjOfList(List<T> list) {
+	if (list == null || list.isEmpty ()) {
+	    return null;
+	}
+	for (T t : list) {
+	    return t;
+	}
+	return null;
+    }
 
     @Override
     public void initialize() {
+	buildHeaderColumn (documents);
+	
 	// init table model
 	MutiTableModel tableModel = new MutiTableModel (columnNames);
 	// init table data
@@ -142,6 +171,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),
 		getResourceMap ().getString (TITLE),TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,
 		toolkit.getFont ()));
-
     }
+    
 }
