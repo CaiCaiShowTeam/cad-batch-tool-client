@@ -21,7 +21,6 @@ import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.CustomStyleToolkit;
 import com.bplead.cad.util.ClientUtils;
-import com.bplead.cad.util.Debug;
 import com.bplead.cad.util.FTPUtils;
 import com.bplead.cad.util.ValidateUtils;
 
@@ -85,13 +84,13 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    dispose ();
 	} else {
 	    File xml = getRepository ();
-	    Debug.P ("xml file is -> " + xml);
+	    logger.debug ("xml file is -> " + xml);
 	    ClientAssert.notNull (xml,"CAD tool initialize failed.Please check file/cad.xml"
 		    + PropertiesUtils.readProperty (CAD_REPOSITORY) + " is exsits");
 	    CadDocuments cadDocuments = XmlUtils.read (xml,CadDocuments.class);
 	    logger.debug ("xml data object cadDocuments:" + cadDocuments);
 	    this.documents = ClientUtils.initialize (cadDocuments);
-	    Debug.P ("merge plm data result is -> " + documents);
+	    logger.debug ("merge plm data result is -> " + documents);
 	}
     }
 
@@ -139,7 +138,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	public void actionPerformed(ActionEvent e) {
 
 	    processorAttachments ();
-	    Debug.P ("processorAttachments after documents is -> " + documents);
+	    logger.debug ("processorAttachments after documents is -> " + documents);
 
 	    // checkin before validate basic data
 	    ValidateUtils.validateCheckin (documents);
@@ -177,7 +176,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void call(Object object) {
-	    Debug.P ("In CheckinWorker call ... " + object);
+	    logger.debug ("In CheckinWorker call ... " + object);
 	}
 
 	@Override
@@ -245,7 +244,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void call(Object object) {
-	    Debug.P ("in CheckoutActionListener call object is -> " + object + " callback is -> " + callback);
+	    logger.debug ("in CheckoutActionListener call object is -> " + object + " callback is -> " + callback);
 	}
     }
 
@@ -278,7 +277,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void call(Object object) {
-	    Debug.P ("in CheckoutWorker call ... " + object);
+	    logger.debug ("in CheckoutWorker call ... " + object);
 	}
 
 	@Override
@@ -366,7 +365,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void call(Object object) {
-	    Debug.P ("in UndoCheckoutActionListener object is -> " + object + " callback is -> " + callback);
+	    logger.debug ("in UndoCheckoutActionListener object is -> " + object + " callback is -> " + callback);
 	}
     }
 
@@ -386,7 +385,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void call(Object object) {
-	    Debug.P ("in UndoCheckoutWorker call ... " + object);
+	    logger.debug ("in UndoCheckoutWorker call ... " + object);
 	}
 
 	@Override

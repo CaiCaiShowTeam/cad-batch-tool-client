@@ -15,6 +15,8 @@ import javax.swing.border.TitledBorder;
 import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
+import com.bplead.cad.model.MutiTable;
+import com.bplead.cad.model.MutiTableModel;
 
 import priv.lee.cad.model.ResourceMapper;
 import priv.lee.cad.ui.AbstractPanel;

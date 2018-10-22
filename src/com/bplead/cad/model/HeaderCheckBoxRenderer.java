@@ -1,4 +1,4 @@
-package com.bplead.cad.ui;
+package com.bplead.cad.model;
 
 import java.awt.Component;
 
