@@ -23,7 +23,7 @@ public class BottonColumnRenderer extends JButton implements TableCellRenderer {
 
     public BottonColumnRenderer() {
 	botton = new JButton ();
-	botton.setIcon (new ImageIcon (BottonColumnRenderer.class.getClassLoader ().getResource ("com/bplead/cad/resource/detail.png")));
+	botton.setIcon (new ImageIcon (BottonColumnRenderer.class.getClassLoader ().getResource ("com/bplead/cad/resource/details.gif")));
 	botton.setToolTipText ("点击将打开BOM比较页面");
 	botton.setContentAreaFilled (false);
 	botton.setPreferredSize (new Dimension (20,20));

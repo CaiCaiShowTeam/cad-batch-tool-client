@@ -38,9 +38,10 @@ import priv.lee.cad.util.StringUtils;
 public class BasicAttributePanel extends AbstractPanel {
 
     private static final long serialVersionUID = 5723039852386303330L;
-    private final String BUTTON_ICON = "folder.search.icon";
-    private CadDocument cadDocument;
+    private final String FOLDER_BUTTON_ICON = "folder.search.icon";
+    private final String PDM_SEARCH_ICON= "pdm.search.icon";
     private final String DETAIL_BUTTON_ICON = "object.details.icon";
+    private CadDocument cadDocument;
     private final String EMPTY_FOLDER = "folder.empty.prompt";
     private final String EMPTY_PDMLINKPRODUCT = "pdm.empty.prompt";
     private final String FOLDER_PROMPT = "folder.prompt";
@@ -289,7 +290,7 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	@Override
 	protected String setIcon() {
-	    return BUTTON_ICON;
+	    return PDM_SEARCH_ICON;
 	}
 
 	@Override
@@ -358,7 +359,7 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	    add (text);
 
-	    add (new OptionPanel (Arrays.asList (new Option (setBottonText (),null,this,getButtonPrerredSize ()))));
+	    add (new OptionPanel (Arrays.asList (new Option (null,setIcon (),this,getButtonPrerredSize ()))));
 	}
 
 	protected void refresh(String text) {
@@ -421,7 +422,7 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	@Override
 	protected String setIcon() {
-	    return BUTTON_ICON;
+	    return FOLDER_BUTTON_ICON;
 	}
 
 	@Override
