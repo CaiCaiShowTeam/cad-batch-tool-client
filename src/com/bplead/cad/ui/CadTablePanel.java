@@ -159,7 +159,7 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	    f = clazz.getDeclaredField (field);
 	}
 	catch(NoSuchFieldException e) {
-	    e.printStackTrace ();
+//	    e.printStackTrace ();
 	    return null;
 	}
 	f.setAccessible (true);
