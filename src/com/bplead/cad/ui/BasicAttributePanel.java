@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
@@ -23,7 +24,7 @@ import com.bplead.cad.bean.SimpleDocument;
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
 import com.bplead.cad.bean.io.CadDocument;
-import com.bplead.cad.bean.io.Container;
+import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Document;
 
 import priv.lee.cad.layout.DefaultGroupLayout;
@@ -141,9 +142,8 @@ public class BasicAttributePanel extends AbstractPanel {
 		toolkit.getFont ()));
 
 	// new productPanel , new subFolderPanel
-	Container container = ( (Document) serializable ).getContainer ();
-	pdmlinkProductPanel = new PDMLinkProductPanel (container == null ? null : container.getProduct ());
-	subFolderPanel = new SubFolderPanel (container == null ? null : container.getFolder ());
+	pdmlinkProductPanel = new PDMLinkProductPanel ((Document) serializable);
+	subFolderPanel = new SubFolderPanel ((Document) serializable);
 	numberPanel = new NumberPanel ((Document) serializable);
 
 	logger.info ("convert to PromptTextField...");
@@ -192,7 +192,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	public void actionPerformed(ActionEvent e) {
 	    // OPNE URL
 	    try {
-		Runtime.getRuntime ().exec ("cmd /c start http://plm.teg.cn/Windchill");
+		Runtime.getRuntime ().exec ("cmd /c start http://www.baidu.com");
 	    }
 	    catch(IOException ee) {
 		ee.printStackTrace ();
@@ -248,19 +248,26 @@ public class BasicAttributePanel extends AbstractPanel {
 
     }
 
-    class PDMLinkProductPanel extends SimpleButtonSetPanel<SimplePdmLinkProduct> {
+    class PDMLinkProductPanel extends SimpleButtonSetPanel<Document> {
 
 	private static final long serialVersionUID = 5788762488066451045L;
 	private SimplePdmLinkProduct product;
+	private Document document;
 
-	public PDMLinkProductPanel(SimplePdmLinkProduct product) {
-	    super (product);
-	    this.product = product;
+	public PDMLinkProductPanel( Document document) {
+	    super (document);
+	    this.document = document;
+	    this.product = document.getContainer () == null ? null : document.getContainer ().getProduct ();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    new PdmLinkProductChooseDialog (this).activate ();
+	    CadStatus cadStatus = document.getCadStatus ();
+	    if (cadStatus == CadStatus.NOT_EXIST) {
+		new PdmLinkProductChooseDialog (this).activate ();
+	    } else {
+		JOptionPane.showMessageDialog (null,"对象已在系统中存在,不能执行更改产品容器操作.","提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	}
 
 	@Override
@@ -299,7 +306,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	}
 
 	@Override
-	protected String setText(SimplePdmLinkProduct product) {
+	protected String setText(Document document) {
 	    if (product == null) {
 		return getResourceMap ().getString (EMPTY_PDMLINKPRODUCT);
 	    }
@@ -384,19 +391,26 @@ public class BasicAttributePanel extends AbstractPanel {
 	protected abstract String setTitle();
     }
 
-    class SubFolderPanel extends SimpleButtonSetPanel<SimpleFolder> {
+    class SubFolderPanel extends SimpleButtonSetPanel<Document> {
 
 	private static final long serialVersionUID = 5788762488066451045L;
 	private SimpleFolder folder;
+	private Document document;
 
-	public SubFolderPanel(SimpleFolder folder) {
-	    super (folder);
-	    this.folder = folder;
+	public SubFolderPanel(Document document) {
+	    super (document);
+	    this.document = document;
+	    this.folder = document.getContainer () == null ? null : document.getContainer ().getFolder ();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    new FolderChooseDialog (this,pdmlinkProductPanel.product).activate ();
+	    CadStatus cadStatus = document.getCadStatus ();
+	    if (cadStatus == CadStatus.NOT_EXIST) {
+		new FolderChooseDialog (this,pdmlinkProductPanel.product).activate ();
+	    } else {
+		JOptionPane.showMessageDialog (null,"对象已在系统中存在,不能执行更改文件夹操作.","提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	}
 
 	@Override
@@ -434,7 +448,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	}
 
 	@Override
-	protected String setText(SimpleFolder folder) {
+	protected String setText(Document document) {
 	    if (folder == null) {
 		return getResourceMap ().getString (EMPTY_FOLDER);
 	    }

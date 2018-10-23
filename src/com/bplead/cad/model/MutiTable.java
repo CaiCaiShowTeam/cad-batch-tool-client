@@ -13,6 +13,8 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.bean.io.CadStatus;
+
 public class MutiTable extends JTable implements MouseListener {
 
     private static final long serialVersionUID = 584842405181279389L;
@@ -35,7 +37,7 @@ public class MutiTable extends JTable implements MouseListener {
 
     private boolean oldEnable = false;
     
-    private int DEFAULT_BUTTON_COLUMN = 2;
+    private int DEFAULT_BUTTON_COLUMN = 3;
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -47,12 +49,19 @@ public class MutiTable extends JTable implements MouseListener {
 	    logger.debug ("row index is -> " + this.rowAtPoint (e.getPoint ()) + " column index is -> " +  this.columnAtPoint (e.getPoint ()) + " value is -> " + value);
 	}
 	if (null != value && JButton.class.isAssignableFrom (value.getClass ())) {
-	    String number = (String) this.getModel ().getValueAt (this.rowAtPoint (e.getPoint ()),DEFAULT_BUTTON_COLUMN);
+	    String number = (String) this.getModel ().getValueAt (this.rowAtPoint (e.getPoint ()),DEFAULT_BUTTON_COLUMN - 1);
+	    String status = (String) this.getModel ().getValueAt (this.rowAtPoint (e.getPoint ()),DEFAULT_BUTTON_COLUMN + 2);
+	    CadStatus cadStatus = CadStatus.toEnumeration (CadStatus.getInnerValueByDisplayName (status));
 	    if (logger.isDebugEnabled ()) {
-		logger.debug ("e.getSource () is JButton and number is -> " + number);
+		logger.debug ("e.getSource () is JButton and number is -> " + number + " cadStatus display is -> " + status + " cadStatus is -> " + cadStatus);
 	    }
 	    //TODO 
-	    JOptionPane.showMessageDialog (null,"open compare window " + number,"success",JOptionPane.INFORMATION_MESSAGE);
+	    if (cadStatus == CadStatus.NOT_EXIST) {
+		JOptionPane.showMessageDialog (null,"该行对象尚未在系统中创建,不能执行该BOM比较操作.","提示",JOptionPane.INFORMATION_MESSAGE);
+	    } else {
+		JOptionPane.showMessageDialog (null,"open compare window " + number,"success",JOptionPane.INFORMATION_MESSAGE);
+	    }
+	    
 //	    new PdmLinkProductChooseDialog (number).activate ();
 	}
 	if (this.columnAtPoint (e.getPoint ()) != this.checkHeaderColumn) {
