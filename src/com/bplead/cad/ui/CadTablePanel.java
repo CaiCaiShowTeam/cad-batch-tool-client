@@ -92,6 +92,9 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     }
 
     public Object [] buildTableRowData(Document document, int rowIndex) throws Exception {
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("document is -> " + document);
+	}
 	CadDocument cadDocument = null;
 	if (StringUtils.isEmpty (document.getOid ())) {
 	    cadDocument = (CadDocument) document.getObject ();
@@ -142,7 +145,7 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	}
 	Object tempObj = object;
 	for (String fieldStr : fieldStrs) {
-	    tempObj = getFieldValue (tempObj,fieldStr);
+	    tempObj = getFieldValue (tempObj,fieldStr,null);
 	    if (logger.isDebugEnabled ()) {
 		logger.debug ("field is -> " + fieldStr + " value is -> " + tempObj);
 	    }
@@ -150,20 +153,27 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	return tempObj;
     }
 
-    public static Object getFieldValue(Object obj, String field)
+    public static Object getFieldValue(Object obj, String field, Class<?> superClass)
 	    throws IllegalArgumentException, IllegalAccessException {
 	if (obj == null) return null;
-	Class<?> clazz = obj.getClass ();
+	Object result = null;
+	Class<?> clazz = superClass == null ? obj.getClass () : superClass;
 	Field f = null;
 	try {
 	    f = clazz.getDeclaredField (field);
+	    f.setAccessible (true);
+	    result = f.get (obj);
 	}
 	catch(NoSuchFieldException e) {
-//	    e.printStackTrace ();
-	    return null;
+	    // e.printStackTrace ();
+	    if (clazz.getSuperclass () != null) {
+		result = getFieldValue (obj,field,clazz.getSuperclass ());
+		if (result != null) {
+		    return result;
+		}
+	    }
 	}
-	f.setAccessible (true);
-	return f.get (obj);
+	return result;
     }
 
     private String getCellContentName(int column) {
