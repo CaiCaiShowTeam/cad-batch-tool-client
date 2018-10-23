@@ -39,11 +39,18 @@ public class MutiTable extends JTable implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+	if (this.rowAtPoint (e.getPoint ()) == DEFAULT_CHECKHEADERCOLUMN) {
+	    return;
+	}
 	Object value = this.getModel ().getValueAt (this.rowAtPoint (e.getPoint ()),this.columnAtPoint (e.getPoint ()));
-	logger.debug ("row index is -> " + this.rowAtPoint (e.getPoint ()) + " column index is -> " +  this.columnAtPoint (e.getPoint ()) + " value is -> " + value);
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("row index is -> " + this.rowAtPoint (e.getPoint ()) + " column index is -> " +  this.columnAtPoint (e.getPoint ()) + " value is -> " + value);
+	}
 	if (null != value && JButton.class.isAssignableFrom (value.getClass ())) {
 	    String number = (String) this.getModel ().getValueAt (this.rowAtPoint (e.getPoint ()),DEFAULT_BUTTON_COLUMN);
-	    logger.debug ("e.getSource () is JButton and number is -> " + number);
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("e.getSource () is JButton and number is -> " + number);
+	    }
 	    //TODO 
 	    JOptionPane.showMessageDialog (null,"open compare window " + number,"success",JOptionPane.INFORMATION_MESSAGE);
 //	    new PdmLinkProductChooseDialog (number).activate ();
