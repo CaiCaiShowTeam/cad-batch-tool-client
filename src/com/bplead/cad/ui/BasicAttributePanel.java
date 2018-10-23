@@ -315,12 +315,12 @@ public class BasicAttributePanel extends AbstractPanel {
     abstract class SimpleButtonSetPanel<T> extends AbstractPanel implements ActionListener, Callback {
 
 	private static final long serialVersionUID = -5690721799689305895L;
-	private final double BUTTON_PROPORTION = 1.7d;
+	private final double BUTTON_PROPORTION = 1d;
 	private final double HEIGHT_PROPORTION = 0.9d;
 	private final double LABEL_PROPORTION = 0.2d;
 	private T object;
 	public PromptTextField text;
-	private final double TEXT_PROPORTION = 0.5d;
+	private final double TEXT_PROPORTION = 0.65d;
 
 	public SimpleButtonSetPanel(T object) {
 	    this.object = object;
@@ -359,7 +359,10 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	    add (text);
 
-	    add (new OptionPanel (Arrays.asList (new Option (null,setIcon (),this,getButtonPrerredSize ()))));
+	    Option option = new Option (null,setIcon (),this,getButtonPrerredSize ());
+	    option.setContentAreaFilled (false);
+	    option.setBorder (null);
+	    add (new OptionPanel (Arrays.asList (option)));
 	}
 
 	protected void refresh(String text) {

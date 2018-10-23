@@ -198,9 +198,13 @@ public class ContainerPanel extends AbstractPanel {
 	    Option setCheck = new Option (setButtonTextCheck (),null,this,getButtonPrerredSizeOther ());
 	    // clear
 	    Option setClear = new Option (setButtonTextClear (),null,this,getButtonPrerredSizeOther ());
+	    
+	    // chose
+	    Option option = new Option (null,BUTTON_ICON,this,getButtonPrerredSize ());
+	    option.setContentAreaFilled (false);
+	    option.setBorder (null);
 
-	    add (new OptionPanel (Arrays.asList (new Option (null,BUTTON_ICON,this,getButtonPrerredSize ()),setAll,
-		    setCheck,setClear)));
+	    add (new OptionPanel (Arrays.asList (option,setAll,setCheck,setClear)));
 	}
 
 	protected void refresh(String text) {
