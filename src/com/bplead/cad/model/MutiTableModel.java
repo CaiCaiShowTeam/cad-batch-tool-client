@@ -8,6 +8,8 @@ import javax.swing.table.AbstractTableModel;
 public class MutiTableModel extends AbstractTableModel {
 
     private static final long serialVersionUID = -1264704523326656387L;
+    
+//    private static Logger logger = Logger.getLogger (MutiTableModel.class.getName ());
 
     private static final String ERROR_DATA_LENGTH = "data length not matching";
 
@@ -82,7 +84,9 @@ public class MutiTableModel extends AbstractTableModel {
 	}
     }
 
+    @Override
     public boolean isCellEditable(int row, int col) {
+	
 	if (col == this.checkColumn) {
 	    return true;
 	}
@@ -91,11 +95,13 @@ public class MutiTableModel extends AbstractTableModel {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
     public void setValueAt(Object value, int row, int col) {
 	( (Vector) contents.get (row) ).set (col,value);
 	this.fireTableCellUpdated (row,col);
     }
 
+    @Override
     public Class<?> getColumnClass(int column) {
 	Object value = getValueAt (0,column);
 
@@ -122,6 +128,7 @@ public class MutiTableModel extends AbstractTableModel {
 	return ( (Vector) contents.get (row) ).get (col);
     }
 
+    @Override
     public String getColumnName(int col) {
 	return columnNames.get (col);
     }

@@ -5,13 +5,19 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
+
 public class MutiTable extends JTable implements MouseListener {
 
     private static final long serialVersionUID = 584842405181279389L;
+    
+    private static Logger logger = Logger.getLogger (MutiTable.class.getName ());
 
     private final int DEFAULT_CHECKHEADERCOLUMN = -1;
 
@@ -28,9 +34,20 @@ public class MutiTable extends JTable implements MouseListener {
     private TableCellRenderer oldCheckHeader = null;
 
     private boolean oldEnable = false;
+    
+    private int DEFAULT_BUTTON_COLUMN = 2;
 
     @Override
     public void mouseClicked(MouseEvent e) {
+	Object value = this.getModel ().getValueAt (this.rowAtPoint (e.getPoint ()),this.columnAtPoint (e.getPoint ()));
+	logger.debug ("row index is -> " + this.rowAtPoint (e.getPoint ()) + " column index is -> " +  this.columnAtPoint (e.getPoint ()) + " value is -> " + value);
+	if (null != value && JButton.class.isAssignableFrom (value.getClass ())) {
+	    String number = (String) this.getModel ().getValueAt (this.rowAtPoint (e.getPoint ()),DEFAULT_BUTTON_COLUMN);
+	    logger.debug ("e.getSource () is JButton and number is -> " + number);
+	    //TODO 
+	    JOptionPane.showMessageDialog (null,"open compare window " + number,"success",JOptionPane.INFORMATION_MESSAGE);
+//	    new PdmLinkProductChooseDialog (number).activate ();
+	}
 	if (this.columnAtPoint (e.getPoint ()) != this.checkHeaderColumn) {
 	    return;
 	}
@@ -222,4 +239,9 @@ public class MutiTable extends JTable implements MouseListener {
 	checkColumnHeader ();
 	this.updateUI ();
     }
+
+    public void setDefaultButtonColumn (int column) {
+	DEFAULT_BUTTON_COLUMN = column;
+    }
+    
 }

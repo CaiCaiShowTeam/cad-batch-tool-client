@@ -7,7 +7,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
@@ -119,8 +118,6 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	// init layout borderLayout
 	getContentPane ().setLayout (new BorderLayout (5,10));
 	
-	getContentPane ().add (new JLabel("你好"),BorderLayout.NORTH);
-
 	westPanel = new WestPanel (documents);
 	getContentPane ().add (westPanel,BorderLayout.WEST);
 
