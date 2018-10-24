@@ -26,6 +26,7 @@ import com.bplead.cad.bean.SimplePdmLinkProduct;
 import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Document;
+import com.bplead.cad.util.ClientUtils;
 
 import priv.lee.cad.layout.DefaultGroupLayout;
 import priv.lee.cad.model.Callback;
@@ -40,7 +41,7 @@ public class BasicAttributePanel extends AbstractPanel {
 
     private static final long serialVersionUID = 5723039852386303330L;
     private final String FOLDER_BUTTON_ICON = "folder.search.icon";
-    private final String PDM_SEARCH_ICON= "pdm.search.icon";
+    private final String PDM_SEARCH_ICON = "pdm.search.icon";
     private final String DETAIL_BUTTON_ICON = "object.details.icon";
     private CadDocument cadDocument;
     private final String EMPTY_FOLDER = "folder.empty.prompt";
@@ -254,7 +255,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	private SimplePdmLinkProduct product;
 	private Document document;
 
-	public PDMLinkProductPanel( Document document) {
+	public PDMLinkProductPanel(Document document) {
 	    super (document);
 	    this.document = document;
 	    this.product = document.getContainer () == null ? null : document.getContainer ().getProduct ();
@@ -268,6 +269,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	    } else {
 		JOptionPane.showMessageDialog (null,"对象已在系统中存在,不能执行更改产品容器操作.","提示",JOptionPane.INFORMATION_MESSAGE);
 	    }
+//	    call (new SimplePdmLinkProduct ("wt.pdmlink.PDMLinkProduct:123456","测试产品容器"));
 	}
 
 	@Override
@@ -279,6 +281,23 @@ public class BasicAttributePanel extends AbstractPanel {
 	    product = (SimplePdmLinkProduct) object;
 
 	    refresh (product.getName ());
+
+	    // refresh cadTablePanel
+	    boolean enable = ClientUtils.enableObject (document);
+	    // enable = true;
+	    if (enable) {
+		String number = ( (CadDocument) document.getObject () ).getNumber ();
+		String containerName = product.getName ();
+		if (logger.isDebugEnabled ()) {
+		    logger.debug (
+			    "refresh cadTablePanel number is -> " + number + " containerName is -> " + containerName);
+		}
+		CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+		String result = cadMainFrame.westPanel.cadTablePanel.refreshContainerByNumber (number,containerName);
+		if (logger.isDebugEnabled ()) {
+		    logger.debug ("选择产品容器后回调函数中处理更新table中产品容器信息的结果 result is -> " + result);
+		}
+	    }
 	}
 
 	public SimplePdmLinkProduct getProduct() {
@@ -336,7 +355,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	private Dimension getButtonPrerredSize() {
 	    BigDecimal width = new BigDecimal (getPreferredSize ().height)
 		    .multiply (new BigDecimal (BUTTON_PROPORTION));
-	    return new Dimension (width.intValue (),((Double)(getPreferredSize ().height*0.8d)).intValue ());
+	    return new Dimension (width.intValue (),( (Double) ( getPreferredSize ().height * 0.8d ) ).intValue ());
 	}
 
 	@Override
@@ -356,8 +375,10 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	    logger.info ("initialize " + getClass () + "  content...");
 	    // ~ initialize content
-//	    setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),setTitle (),
-//		    TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont ()));
+	    // setBorder (BorderFactory.createTitledBorder
+	    // (BorderFactory.createEtchedBorder (),setTitle (),
+	    // TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont
+	    // ()));
 
 	    PromptTextField.PromptTextFieldDimension dimension = PromptTextField.newDimension (getPreferredSize (),
 		    LABEL_PROPORTION,TEXT_PROPORTION,HEIGHT_PROPORTION);
@@ -421,6 +442,21 @@ public class BasicAttributePanel extends AbstractPanel {
 	    folder = ( (FolderTree.FolderNode) nodes[nodes.length - 1] ).getFolder ();
 
 	    refresh (folder.getName ());
+
+	    // refresh cadTablePanel
+	    boolean enable = ClientUtils.enableObject (document);
+	    if (enable) {
+		String number = ( (CadDocument) document.getObject () ).getNumber ();
+		String folderName = folder.getName ();
+		if (logger.isDebugEnabled ()) {
+		    logger.debug ("refresh cadTablePanel number is -> " + number + " folderName is -> " + folderName);
+		}
+		CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+		String result = cadMainFrame.westPanel.cadTablePanel.refreshFolderByNumber (number,folderName);
+		if (logger.isDebugEnabled ()) {
+		    logger.debug ("选择文件夹后回调函数中处理更新table中文件夹信息的结果 result is -> " + result);
+		}
+	    }
 	}
 
 	public SimpleFolder getFolder() {

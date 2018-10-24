@@ -440,6 +440,42 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	}
 	return map;
     }
+    
+    public String refreshContainerByNumber (String number,String containerName) {
+	StringBuffer buf = new StringBuffer ();
+	Integer rowIndex = getRowIndexByValue (number,DEFAULT_NUMBER_COLUMN);
+	if (rowIndex != null) {
+	    mutiTable.getModel ().setValueAt (containerName,rowIndex,DEFAULT_CONTAINER_COLUMN);
+	    buf.append ("第[" + (rowIndex + 1) + "行的产品容器信息已成功更新为[" + containerName + "]");
+	} else {
+	    buf.append ("根据编号[" + number + "]和编号所在列从0开始[" + DEFAULT_NUMBER_COLUMN + "]找不到对应的数据行,操作无法执行.");
+	}
+	return buf.toString ();
+    }
+    
+    public String refreshFolderByNumber (String number,String folderName) {
+	StringBuffer buf = new StringBuffer ();
+	Integer rowIndex = getRowIndexByValue (number,DEFAULT_NUMBER_COLUMN);
+	if (rowIndex != null) {
+	    mutiTable.getModel ().setValueAt (folderName,rowIndex,DEFAULT_FOLDER_COLUMN);
+	    buf.append ("第[" + (rowIndex + 1) + "行的文件夹信息已成功更新为[" + folderName + "]");
+	} else {
+	    buf.append ("根据编号[" + number + "]和编号所在列从0开始[" + DEFAULT_NUMBER_COLUMN + "]找不到对应的数据行,操作无法执行.");
+	}
+	return buf.toString ();
+    }
+    
+    private Integer getRowIndexByValue (String value, Integer column) {
+	int rowCount = mutiTable.getRowCount ();
+	for (int i = 0; i < rowCount; i++) {
+	    String tempValue = (String) mutiTable.getModel ().getValueAt (i,column);
+	    if (StringUtils.equals (tempValue,value)) {
+		return i;
+	    }
+	}
+	return null;
+    }
+    
 
     @Override
     public void initialize() {
