@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -26,6 +27,7 @@ import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.BottonColumnRenderer;
 import com.bplead.cad.model.MutiTable;
 import com.bplead.cad.model.MutiTableModel;
+import com.bplead.cad.util.ClientUtils;
 
 import priv.lee.cad.model.ResourceMap;
 import priv.lee.cad.model.ResourceMapper;
@@ -43,7 +45,11 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     private static Logger logger = Logger.getLogger (CadTablePanel.class.getName ());
     private static final String TITLE = "title";
     private final int CHECKHEADERCOLUMN = 0;
+    private final int DEFAULT_NUMBER_COLUMN = 2;
     private final int BOTTON_COLUMN_INDEX = 3;
+    private final int DEFAULT_STATUS_COLUMN = 5;
+    private final int DEFAULT_CONTAINER_COLUMN = 6;
+    private final int DEFAULT_FOLDER_COLUMN = 7;
     private final double TABLE_HEIGHT_PROPORTION = 1.05d;
     private final double SCROLL_HEIGHT_PROPORTION = 0.9d;
     private final double SCROLL_WIDTH_PROPORTION = 0.97d;
@@ -96,7 +102,7 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	    logger.debug ("document is -> " + document);
 	}
 	CadDocument cadDocument = null;
-	if (StringUtils.isEmpty (document.getOid ())) {
+	if (ClientUtils.enableObject (document)) {
 	    cadDocument = (CadDocument) document.getObject ();
 	} else {
 	    cadDocument = null;
@@ -214,8 +220,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     }
 
     public void buildHeaderColumn() {
-	// columnNames = new String [] { "", "序号", "图纸代号", "对比", "图纸名称", "状况",
-	// "产品容器", "文件夹" };
 	List<String> headerList = getColumnHeaders ();
 	if (logger.isDebugEnabled ()) {
 	    logger.debug ("headerList is -> " + headerList);
@@ -234,6 +238,207 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	    return t;
 	}
 	return null;
+    }
+
+    /**
+     * @author zjw
+     * @param text
+     *            update content
+     * @param type
+     *            all/check/clear
+     * @return 2018年10月24日下午3:17:25
+     */
+    public String refreshContainerData(String text, String type) {
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("refreshContainerData is -> text=[" + text + "] type=[" + type + "]");
+	}
+	if (StringUtils.equals (type,"all")) {
+	    return refreshAll (text,"container");
+	} else if (StringUtils.equals (type,"check")) {
+	    return refreshCheck (text,"container");
+	} else if (StringUtils.equals (type,"clear")) {
+	    return refreshClear ("container");
+	}
+	return null;
+    }
+
+    /**
+     * @author zjw
+     * @param text
+     *            update content
+     * @param type
+     *            all/check/clear
+     * @return 2018年10月24日下午3:17:25
+     */
+    public String refreshFolderData(String text, String type) {
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("refreshFolderData is -> text=[" + text + "] type=[" + type + "]");
+	}
+	if (StringUtils.equals (type,"all")) {
+	    return refreshAll (text,"folder");
+	} else if (StringUtils.equals (type,"check")) {
+	    return refreshCheck (text,"folder");
+	} else if (StringUtils.equals (type,"clear")) {
+	    return refreshClear ("folder");
+	}
+	return null;
+    }
+
+    /**
+     * @author zjw
+     * @param text
+     *            update content
+     * @param type
+     *            container/folder
+     * @return 2018年10月24日下午3:17:59
+     */
+    private String refreshAll(String text, String type) {
+	StringBuffer buf = new StringBuffer ();
+	int rowCount = mutiTable.getRowCount ();
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("refreshAll mutiTable rowCount is -> " + rowCount);
+	}
+	if (StringUtils.equals (type,"container")) {
+	    for (int i = 0; i < rowCount; i++) {
+		String status = (String) mutiTable.getModel ().getValueAt (i,DEFAULT_STATUS_COLUMN);
+		boolean enable = ClientUtils.enableObject (status);
+		if (enable) {
+		    mutiTable.getModel ().setValueAt (text,i,DEFAULT_CONTAINER_COLUMN);
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据的产品容器信息已更新为[" + text + "]");
+		} else {
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据已在系统中存在,不能更新其产品容器信息.");
+		}
+	    }
+	} else if (StringUtils.equals (type,"folder")) {
+	    for (int i = 0; i < rowCount; i++) {
+		String status = (String) mutiTable.getModel ().getValueAt (i,DEFAULT_STATUS_COLUMN);
+		boolean enable = ClientUtils.enableObject (status);
+		if (enable) {
+		    mutiTable.getModel ().setValueAt (text,i,DEFAULT_FOLDER_COLUMN);
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据的文件夹信息已更新为[" + text + "]");
+		} else {
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据已在系统中存在,不能更新其文件夹信息.");
+		}
+	    }
+	}
+	return buf.toString ();
+    }
+
+    /**
+     * @author zjw
+     * @param text
+     *            update content
+     * @param type
+     *            container/folder
+     * @return 2018年10月24日下午3:17:59
+     */
+    private String refreshCheck(String text, String type) {
+	StringBuffer buf = new StringBuffer ();
+	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("refreshCheck mutiTable checkRowIndex is -> " + checkRowL);
+	}
+	if (StringUtils.equals (type,"container")) {
+	    for (int i = 0; i < checkRowL.size (); i++) {
+		Integer checkRowIndex = checkRowL.get (i);
+		String status = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_STATUS_COLUMN);
+		boolean enable = ClientUtils.enableObject (status);
+		if (enable) {
+		    mutiTable.getModel ().setValueAt (text,checkRowIndex,DEFAULT_CONTAINER_COLUMN);
+		    buf.append ("表格中第" + ( checkRowIndex + 1 ) + "行数据的产品容器信息已更新为[" + text + "]");
+		} else {
+		    buf.append ("表格中第" + ( checkRowIndex + 1 ) + "行数据已在系统中存在,不能更新其产品容器信息.");
+		}
+	    }
+	} else if (StringUtils.equals (type,"folder")) {
+	    for (int i = 0; i < checkRowL.size (); i++) {
+		Integer checkRowIndex = checkRowL.get (i);
+		String status = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_STATUS_COLUMN);
+		boolean enable = ClientUtils.enableObject (status);
+		if (enable) {
+		    mutiTable.getModel ().setValueAt (text,checkRowIndex,DEFAULT_FOLDER_COLUMN);
+		    buf.append ("表格中第" + ( checkRowIndex + 1 ) + "行数据的文件夹信息已更新为[" + text + "]");
+		} else {
+		    buf.append ("表格中第" + ( checkRowIndex + 1 ) + "行数据已在系统中存在,不能更新其文件夹信息.");
+		}
+	    }
+	}
+	return buf.toString ();
+    }
+
+    /**
+     * @author zjw
+     * @param text
+     *            update content
+     * @param type
+     *            container/folder
+     * @return 2018年10月24日下午3:17:59
+     */
+    private String refreshClear(String type) {
+	StringBuffer buf = new StringBuffer ();
+	int rowCount = mutiTable.getRowCount ();
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("refreshClear mutiTable rowCount is -> " + rowCount);
+	}
+	if (StringUtils.equals (type,"container")) {
+	    for (int i = 0; i < rowCount; i++) {
+		String status = (String) mutiTable.getModel ().getValueAt (i,DEFAULT_STATUS_COLUMN);
+		boolean enable = ClientUtils.enableObject (status);
+		if (enable) {
+		    mutiTable.getModel ().setValueAt (null,i,DEFAULT_CONTAINER_COLUMN);
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据的产品容器信息已被清空.");
+		} else {
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据已在系统中存在,不能更新其产品容器信息.");
+		}
+	    }
+	} else if (StringUtils.equals (type,"folder")) {
+	    for (int i = 0; i < rowCount; i++) {
+		String status = (String) mutiTable.getModel ().getValueAt (i,DEFAULT_STATUS_COLUMN);
+		boolean enable = ClientUtils.enableObject (status);
+		if (enable) {
+		    mutiTable.getModel ().setValueAt (null,i,DEFAULT_FOLDER_COLUMN);
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据的文件夹信息已被清空.");
+		} else {
+		    buf.append ("表格中第" + ( i + 1 ) + "行数据已在系统中存在,不能更新其文件夹信息.");
+		}
+	    }
+	}
+	return buf.toString ();
+    }
+
+    public LinkedHashMap<String, Integer> getCheckEnableColumnValue() {
+	LinkedHashMap<String, Integer> map = new LinkedHashMap<String, Integer> ();
+	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("getCheckEnableColumnValue checkRowL is -> " + checkRowL);
+	}
+	for (int i = 0; i < checkRowL.size (); i++) {
+	    Integer checkRowIndex = checkRowL.get (i);
+	    String status = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_STATUS_COLUMN);
+	    boolean enable = ClientUtils.enableObject (status);
+	    if (enable) {
+		String number = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_NUMBER_COLUMN);
+		map.put (number,checkRowIndex);
+	    }
+	}
+	return map;
+    }
+
+    public LinkedHashMap<String, Integer> getAllEnableColumnValue() {
+	LinkedHashMap<String, Integer> map = new LinkedHashMap<String, Integer> ();
+	int rowCount = mutiTable.getRowCount ();
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("getAllEnableColumnValue mutiTable rowCount is -> " + rowCount);
+	}
+	for (int i = 0; i < rowCount; i++) {
+	    String status = (String) mutiTable.getModel ().getValueAt (i,DEFAULT_STATUS_COLUMN);
+	    boolean enable = ClientUtils.enableObject (status);
+	    if (enable) {
+		String number = (String) mutiTable.getModel ().getValueAt (i,DEFAULT_NUMBER_COLUMN);
+		map.put (number,i);
+	    }
+	}
+	return map;
     }
 
     @Override

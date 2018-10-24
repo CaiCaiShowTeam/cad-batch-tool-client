@@ -24,6 +24,8 @@ import com.bplead.cad.bean.io.Attachment;
 import com.bplead.cad.bean.io.AttachmentModel;
 import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadDocuments;
+import com.bplead.cad.bean.io.CadStatus;
+import com.bplead.cad.bean.io.Container;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.CustomPrompt;
@@ -31,6 +33,7 @@ import com.bplead.cad.model.CustomPrompt;
 import priv.lee.cad.util.ClientAssert;
 import priv.lee.cad.util.ClientInstanceUtils;
 import priv.lee.cad.util.PropertiesUtils;
+import priv.lee.cad.util.StringUtils;
 
 public class ClientUtils extends ClientInstanceUtils {
 
@@ -54,22 +57,75 @@ public class ClientUtils extends ClientInstanceUtils {
 	}
 	return attachments;
     }
+
+    public static boolean enableObject(Document document) {
+	CadStatus status = document.getCadStatus ();
+	if (status == CadStatus.NOT_EXIST) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
     
+    public static boolean enableObject(CadStatus cadStatus) {
+	if (cadStatus == CadStatus.NOT_EXIST) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    
+    public static boolean enableObject(String status) {
+	CadStatus cadStatus = getStatusByDisplay (status);
+	return enableObject (cadStatus);
+    }
+
+    public static CadStatus getStatusByDisplay(String display) {
+	if (StringUtils.isEmpty (display)) {
+	    return null;
+	}
+	return CadStatus.toEnumeration (CadStatus.getInnerValueByDisplayName (display));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T getParentContainer(java.awt.Container container, Class<T> clazz) {
+	if (clazz.isAssignableFrom (container.getClass ())) {
+	    return (T) container;
+	}
+	return getParentContainer (container.getParent (),clazz);
+    }
+
     /**
-     * TODO 
+     * TODO
+     * 
      * @author zjw
      * @param cadDocuments
-     * @return 
-     * 2018年10月17日下午3:29:38
+     * @return 2018年10月17日下午3:29:38
      */
     public static Documents initialize(CadDocuments cadDocuments) {
-//	ClientAssert.notNull (cadDocuments,"cadDocuments is required");
-//	return invoke (RemoteMethod.INIT_DATA, new Class<?> [] { CadDocuments.class }, new Object [] { cadDocuments },
-//		Documents.class);
-	List<Document> docList = new ArrayList<Document>();
-	for (CadDocument cadDocument : cadDocuments.getCadDocs ()) {
+	// ClientAssert.notNull (cadDocuments,"cadDocuments is required");
+	// return invoke (RemoteMethod.INIT_DATA, new Class<?> [] {
+	// CadDocuments.class }, new Object [] { cadDocuments },
+	// Documents.class);
+	List<Document> docList = new ArrayList<Document> ();
+	List<CadDocument> cadDocList = cadDocuments.getCadDocs ();
+	for (int i = 0; i < cadDocList.size (); i++) {
+	    CadDocument cadDocument = cadDocList.get (i);
 	    Document document = new Document ();
-	    document.setObject (cadDocument);
+	    if (i == 0) {
+		document.setOid ("wt.epm.EPMDocument:123456" + i);
+		document.setNumber (cadDocument.getNumber ());
+		document.setName (cadDocument.getName ());
+		Container container = new Container ();
+		container.setProduct (new SimplePdmLinkProduct ("wt.pdmlink.PDMLinkProduct:123456" + i,"GOLF"));
+		container.setFolder (new SimpleFolder ("wt.folder.SubFolder:123456" + i,"/Default/03三维模型"));
+		document.setContainer (container);
+		document.setCadStatus (CadStatus.CHECK_IN);
+		document.setObject (cadDocument);
+	    } else {
+		document.setObject (cadDocument);
+	    }
+
 	    docList.add (document);
 	}
 	Documents document = new Documents ();
@@ -82,14 +138,14 @@ public class ClientUtils extends ClientInstanceUtils {
 	return invoke (RemoteMethod.CHECKIN,new Class<?> [] { Documents.class },new Object [] { documents },
 		Boolean.class);
     }
-    
+
     @SuppressWarnings("unchecked")
     public static List<SimpleDocument> undoCheckout(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");
 	return invoke (RemoteMethod.UNDO_CHECKOUT,new Class<?> [] { Documents.class },new Object [] { documents },
 		List.class);
     }
-    
+
     @SuppressWarnings("unchecked")
     public static List<SimpleDocument> checkout(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");
@@ -168,12 +224,14 @@ public class ClientUtils extends ClientInstanceUtils {
 	}
     }
 
-//    @SuppressWarnings("unchecked")
-//    public static List<SimpleDocument> search(String number, String name) {
-//	ClientAssert.isTrue (StringUtils.hasText (number) || StringUtils.hasText (name),"Number or name is requried");
-//	return invoke (RemoteMethod.SEARCH,new Class<?> [] { String.class, String.class },
-//		new Object [] { number, name },List.class);
-//    }
+    // @SuppressWarnings("unchecked")
+    // public static List<SimpleDocument> search(String number, String name) {
+    // ClientAssert.isTrue (StringUtils.hasText (number) || StringUtils.hasText
+    // (name),"Number or name is requried");
+    // return invoke (RemoteMethod.SEARCH,new Class<?> [] { String.class,
+    // String.class },
+    // new Object [] { number, name },List.class);
+    // }
 
     public static File unzip(File zipFile) {
 	ClientAssert.notNull (zipFile,"Zip file is required");

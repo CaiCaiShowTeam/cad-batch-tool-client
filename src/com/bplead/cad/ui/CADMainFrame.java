@@ -54,7 +54,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	super (CADMainFrame.class);
 	setToolkit (toolkit);
     }
-
+    
     @Override
     public void call(Object object) {
 	reload ();
@@ -417,6 +417,14 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 		detailTextAreaPanel.println (progress.getPrompt ());
 	    }
 	}
+    }
+
+    public Documents getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(Documents documents) {
+        this.documents = documents;
     }
 
 }

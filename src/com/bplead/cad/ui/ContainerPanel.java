@@ -6,15 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
+import com.bplead.cad.util.ClientUtils;
 
 import priv.lee.cad.model.Callback;
 import priv.lee.cad.ui.AbstractPanel;
@@ -22,6 +25,7 @@ import priv.lee.cad.ui.Option;
 import priv.lee.cad.ui.OptionPanel;
 import priv.lee.cad.ui.PromptTextField;
 import priv.lee.cad.util.ClientAssert;
+import priv.lee.cad.util.StringUtils;
 
 public class ContainerPanel extends AbstractPanel {
 
@@ -46,6 +50,7 @@ public class ContainerPanel extends AbstractPanel {
     public PDMLinkProductPanel pdmlinkProductPanel;
     public SubFolderPanel subFolderPanel;
     private final String TITLE = "title";
+
     @Override
     public double getHorizontalProportion() {
 	return 0.99d;
@@ -59,11 +64,11 @@ public class ContainerPanel extends AbstractPanel {
     @Override
     public void initialize() {
 
-	setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),getResourceMap ().getString (TITLE),
-		TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont ()));
-	
-//	setBorder (BorderFactory.createLineBorder (Color.BLUE));
-	
+	setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),
+		getResourceMap ().getString (TITLE),TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,
+		toolkit.getFont ()));
+
+	// setBorder (BorderFactory.createLineBorder (Color.BLUE));
 
 	logger.info ("initialize " + PDMLinkProductPanel.class + "...");
 	pdmlinkProductPanel = new PDMLinkProductPanel (null);
@@ -88,7 +93,88 @@ public class ContainerPanel extends AbstractPanel {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    new PdmLinkProductChooseDialog (this).activate ();
+	    Option option = (Option) e.getSource ();
+	    String containerName = this.text.getText ().getText ();
+	    boolean flag = this.getProduct () != null;
+	    if (flag) {
+		containerName = this.getProduct ().getName ();
+	    }
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("containerName is -> " + containerName);
+	    }
+	    flag = true;
+	    if (StringUtils.equals (option.getText (),"设置全部")) {
+		if (flag) {
+		    setAllForContainer (containerName);
+		} else {
+		    JOptionPane.showMessageDialog (null,"尚未选择产品容器","提示",JOptionPane.INFORMATION_MESSAGE);
+		}
+	    } else if (StringUtils.equals (option.getText (),"设置选中")) {
+		if (flag) {
+		    setCheckForContainer (containerName);
+		} else {
+		    JOptionPane.showMessageDialog (null,"尚未选择产品容器","提示",JOptionPane.INFORMATION_MESSAGE);
+		}
+	    } else if (StringUtils.equals (option.getText (),"清空全部")) {
+		if (flag) {
+		    setClearForContainer (containerName);
+		} else {
+		    JOptionPane.showMessageDialog (null,"尚未选择产品容器","提示",JOptionPane.INFORMATION_MESSAGE);
+		}
+	    } else {
+		new PdmLinkProductChooseDialog (this).activate ();
+	    }
+	}
+	
+	public void setAllForContainer (String containerName) {
+	    JOptionPane.showMessageDialog (null,"您点击的是'设置全部'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    //refresh CadTablePanel data
+	    WestPanel westPanel = ClientUtils.getParentContainer (this,WestPanel.class);
+	    String result = westPanel.cadTablePanel.refreshContainerData (containerName,"all");
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置全部 refreshContainerData result is -> " + result);
+	    }
+	    //refresh TabAttributePanel data
+	    CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+	    LinkedHashMap<String, Integer> editMap = westPanel.cadTablePanel.getAllEnableColumnValue ();
+	    String resultTabbed = cadMainFrame.tabAttributePanel.refreshContainerData (editMap, containerName);
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置全部 refreshContainerData resultTabbed is -> " + resultTabbed);
+	    }
+	}
+	
+	public void setCheckForContainer (String containerName) {
+	    JOptionPane.showMessageDialog (null,"您点击的是'设置选中'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    //refresh CadTablePanel data
+	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
+	    String result = westPanel.cadTablePanel.refreshContainerData (containerName,"check");
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置选中 refreshContainerData result is -> " + result);
+	    }
+	    //refresh TabAttributePanel data
+	    CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+	    LinkedHashMap<String, Integer> editMap = westPanel.cadTablePanel.getCheckEnableColumnValue ();
+	    String resultTabbed = cadMainFrame.tabAttributePanel.refreshContainerData (editMap, containerName);
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置选中refreshContainerData resultTabbed is -> " + resultTabbed);
+	    }
+	}
+	
+	public void setClearForContainer (String containerName) {
+	    JOptionPane.showMessageDialog (null,"您点击的是'清空全部'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    //refresh CadTablePanel data
+	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
+	    String result = westPanel.cadTablePanel.refreshContainerData (containerName,"clear");
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("清空全部 refreshContainerData result is -> " + result);
+	    }
+	    //refresh TabAttributePanel data
+	    CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+	    LinkedHashMap<String, Integer> editMap = westPanel.cadTablePanel.getAllEnableColumnValue ();
+	    String resultTabbed = cadMainFrame.tabAttributePanel.refreshContainerData (editMap, null);
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("清空全部 refreshContainerData resultTabbed is -> " + resultTabbed);
+	    }
 	}
 
 	@Override
@@ -182,8 +268,10 @@ public class ContainerPanel extends AbstractPanel {
 	public void initialize() {
 	    logger.info ("initialize " + getClass () + "  content...");
 	    // ~ initialize content
-//	    setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),setTitle (),
-//		    TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont ()));
+	    // setBorder (BorderFactory.createTitledBorder
+	    // (BorderFactory.createEtchedBorder (),setTitle (),
+	    // TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont
+	    // ()));
 
 	    setBorder (BorderFactory.createLineBorder (Color.GREEN));
 
@@ -198,7 +286,7 @@ public class ContainerPanel extends AbstractPanel {
 	    Option setCheck = new Option (setButtonTextCheck (),null,this,getButtonPrerredSizeOther ());
 	    // clear
 	    Option setClear = new Option (setButtonTextClear (),null,this,getButtonPrerredSizeOther ());
-	    
+
 	    // chose
 	    Option option = new Option (null,BUTTON_ICON,this,getButtonPrerredSize ());
 	    option.setContentAreaFilled (false);
@@ -238,7 +326,88 @@ public class ContainerPanel extends AbstractPanel {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    new FolderChooseDialog (this,pdmlinkProductPanel.product).activate ();
+	    Option option = (Option) e.getSource ();
+	    String folderName = this.text.getText ().getText ();
+	    boolean flag = this.getFolder () != null;
+	    if (flag) {
+		folderName = this.getFolder ().getName ();
+	    }
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("folderName is -> " + folderName);
+	    }
+	    flag = true;
+	    if (StringUtils.equals (option.getText (),"设置全部")) {
+		if (flag) {
+		    setAllForFolder (folderName);
+		} else {
+		    JOptionPane.showMessageDialog (null,"尚未选择文件夹,不能执行该操作","提示",JOptionPane.INFORMATION_MESSAGE);
+		}
+	    } else if (StringUtils.equals (option.getText (),"设置选中")) {
+		if (flag) {
+		    setCheckForFolder (folderName);
+		} else {
+		    JOptionPane.showMessageDialog (null,"尚未选择文件夹,不能执行该操作","提示",JOptionPane.INFORMATION_MESSAGE);
+		}
+	    } else if (StringUtils.equals (option.getText (),"清空全部")) {
+		if (flag) {
+		   setClearForFolder (folderName);
+		} else {
+		    JOptionPane.showMessageDialog (null,"尚未选择文件夹,不能执行该操作","提示",JOptionPane.INFORMATION_MESSAGE);
+		}
+	    } else {
+		new FolderChooseDialog (this,pdmlinkProductPanel.product).activate ();
+	    }
+	}
+	
+	public void setAllForFolder (String folderName) {
+	    JOptionPane.showMessageDialog (null,"您点击的是'设置全部'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    //refresh CadTablePanel data
+	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
+	    String result = westPanel.cadTablePanel.refreshFolderData (folderName,"all");
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置全部 refreshFolderData result is -> " + result);
+	    }
+	    //refresh TabAttributePanel data
+	    CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+	    LinkedHashMap<String, Integer> editMap = westPanel.cadTablePanel.getAllEnableColumnValue ();
+	    String resultTabbed = cadMainFrame.tabAttributePanel.refreshFolderData (editMap, folderName);
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置全部 refreshFolderData resultTabbed is -> " + resultTabbed);
+	    }
+	}
+	
+	public void setCheckForFolder (String folderName) {
+	    JOptionPane.showMessageDialog (null,"您点击的是'设置选中'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    //refresh CadTablePanel data
+	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
+	    String result = westPanel.cadTablePanel.refreshFolderData (folderName,"check");
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置选中 refreshFolderData result is -> " + result);
+	    }
+	    //refresh TabAttributePanel data
+	    CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+	    LinkedHashMap<String, Integer> editMap = westPanel.cadTablePanel.getCheckEnableColumnValue ();
+	    String resultTabbed = cadMainFrame.tabAttributePanel.refreshFolderData (editMap, folderName);
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("设置选中 refreshFolderData resultTabbed is -> " + resultTabbed);
+	    }
+	}
+	
+	public void setClearForFolder (String folderName) {
+	    JOptionPane.showMessageDialog (null,"您点击的是'清空全部'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    //refresh CadTablePanel data
+	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
+	    String result = westPanel.cadTablePanel.refreshFolderData (folderName,"clear");
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("清空全部 refreshFolderData result is -> " + result);
+	    }
+	    //refresh TabAttributePanel data
+	    CADMainFrame cadMainFrame = ClientUtils.getParentContainer (this,CADMainFrame.class);
+	    LinkedHashMap<String, Integer> editMap = westPanel.cadTablePanel.getAllEnableColumnValue ();
+	    String resultTabbed = cadMainFrame.tabAttributePanel.refreshFolderData (editMap, null);
+	    if (logger.isInfoEnabled ()) {
+		logger.info ("清空全部 refreshFolderData resultTabbed is -> " + resultTabbed);
+	    }
 	}
 
 	@Override
