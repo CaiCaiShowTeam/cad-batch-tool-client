@@ -36,8 +36,6 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
     private final String CAD_REPOSITORY = "cad.xml.repository";
 
-    protected CadTablePanel cadTablePanel;
-
     protected DetailTextAreaPanel detailTextAreaPanel;
 
     private Documents documents;
@@ -75,6 +73,18 @@ public class CADMainFrame extends AbstractFrame implements Callback {
     @Override
     public double getVerticalProportion() {
 	return 0.99d;
+    }
+    
+    /**
+     * TODO
+     * @author zjw
+     * 	       checkin checkout undocheckout
+     * @return 
+     * 2018年10月24日下午9:55:28
+     */
+    public void mergeCommitParam () {
+	CadTablePanel cadTablePanel = westPanel.cadTablePanel;
+	documents = cadTablePanel.mergeCommitParam ();
     }
 
     private void initCAD() {
@@ -417,14 +427,6 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 		detailTextAreaPanel.println (progress.getPrompt ());
 	    }
 	}
-    }
-
-    public Documents getDocuments() {
-        return documents;
-    }
-
-    public void setDocuments(Documents documents) {
-        this.documents = documents;
     }
 
 }

@@ -48,14 +48,11 @@ public class ValidateUtils {
 	List<Document> documentL = documents.getDocuments ();
 	ClientAssert.notNull (documentL,"documentL is required");
 	for (Document document : documentL) {
-	    String oid = document.getOid ();
-	    if (StringUtils.isEmpty (oid)) {
+	    CadStatus cadStatus = document.getCadStatus ();
+	    if (cadStatus == CadStatus.NOT_EXIST) {
 		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NO_PERSISTENCE);
-	    } else {
-		CadStatus cadStatus = document.getCadStatus ();
-		if (cadStatus == CadStatus.CHECK_IN) {
-		    ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NOT_CHECKOUT);
-		} 
+	    } else if (cadStatus == CadStatus.CHECK_IN) {
+		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NOT_CHECKOUT);
 	    }
 	}
 	logger.info ("Validate UndoCheckout complete...");
@@ -68,14 +65,11 @@ public class ValidateUtils {
  	List<Document> documentL = documents.getDocuments ();
  	ClientAssert.notNull (documentL,"documentL is required");
  	for (Document document : documentL) {
- 	    String oid = document.getOid ();
- 	    if (StringUtils.isEmpty (oid)) {
+ 	    CadStatus cadStatus = document.getCadStatus ();
+ 	    if (cadStatus == CadStatus.NOT_EXIST) {
  		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NO_PERSISTENCE);
- 	    } else {
- 		CadStatus cadStatus = document.getCadStatus ();
- 		if (cadStatus == CadStatus.CHECK_OUT || cadStatus == CadStatus.NOT_EXIST) {
- 		    ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.HAS_CHECKOUT);
- 		} 
+ 	    } else if (cadStatus == CadStatus.CHECK_OUT) {
+ 		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.HAS_CHECKOUT);
  	    }
  	}
  	logger.info ("Validate Checkout complete...");

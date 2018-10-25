@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -20,8 +21,11 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.bean.SimpleFolder;
+import com.bplead.cad.bean.SimplePdmLinkProduct;
 import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadStatus;
+import com.bplead.cad.bean.io.Container;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.BottonColumnRenderer;
@@ -440,32 +444,32 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	}
 	return map;
     }
-    
-    public String refreshContainerByNumber (String number,String containerName) {
+
+    public String refreshContainerByNumber(String number, String containerName) {
 	StringBuffer buf = new StringBuffer ();
 	Integer rowIndex = getRowIndexByValue (number,DEFAULT_NUMBER_COLUMN);
 	if (rowIndex != null) {
 	    mutiTable.getModel ().setValueAt (containerName,rowIndex,DEFAULT_CONTAINER_COLUMN);
-	    buf.append ("第[" + (rowIndex + 1) + "行的产品容器信息已成功更新为[" + containerName + "]");
+	    buf.append ("第[" + ( rowIndex + 1 ) + "行的产品容器信息已成功更新为[" + containerName + "]");
 	} else {
 	    buf.append ("根据编号[" + number + "]和编号所在列从0开始[" + DEFAULT_NUMBER_COLUMN + "]找不到对应的数据行,操作无法执行.");
 	}
 	return buf.toString ();
     }
-    
-    public String refreshFolderByNumber (String number,String folderName) {
+
+    public String refreshFolderByNumber(String number, String folderName) {
 	StringBuffer buf = new StringBuffer ();
 	Integer rowIndex = getRowIndexByValue (number,DEFAULT_NUMBER_COLUMN);
 	if (rowIndex != null) {
 	    mutiTable.getModel ().setValueAt (folderName,rowIndex,DEFAULT_FOLDER_COLUMN);
-	    buf.append ("第[" + (rowIndex + 1) + "行的文件夹信息已成功更新为[" + folderName + "]");
+	    buf.append ("第[" + ( rowIndex + 1 ) + "行的文件夹信息已成功更新为[" + folderName + "]");
 	} else {
 	    buf.append ("根据编号[" + number + "]和编号所在列从0开始[" + DEFAULT_NUMBER_COLUMN + "]找不到对应的数据行,操作无法执行.");
 	}
 	return buf.toString ();
     }
-    
-    private Integer getRowIndexByValue (String value, Integer column) {
+
+    private Integer getRowIndexByValue(String value, Integer column) {
 	int rowCount = mutiTable.getRowCount ();
 	for (int i = 0; i < rowCount; i++) {
 	    String tempValue = (String) mutiTable.getModel ().getValueAt (i,column);
@@ -475,7 +479,79 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	}
 	return null;
     }
+
+//    public LinkedHashMap<Integer, HashMap<Integer, Object>> getAllCheckRowValues() {
+//	LinkedHashMap<Integer, HashMap<Integer, Object>> map = new LinkedHashMap<Integer, HashMap<Integer, Object>> ();
+//	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
+//	int colCount = mutiTable.getModel ().getColumnCount ();
+//	if (logger.isDebugEnabled ()) {
+//	    logger.debug ("getAllCheckRowValues checkRowL is -> " + checkRowL);
+//	}
+//	for (int i = 0; i < checkRowL.size (); i++) {
+//	    Integer checkRowIndex = checkRowL.get (i);
+//	    HashMap<Integer, Object> columnValueMap = new HashMap<Integer, Object> ();
+//	    for (int j = 0; j < colCount; j++) {
+//		Object value = mutiTable.getModel ().getValueAt (checkRowIndex,j);
+//		columnValueMap.put (j,value);
+//	    }
+//	    map.put (checkRowIndex,columnValueMap);
+//	}
+//	return map;
+//    }
+
+    public Object getCellValue(int rowIndex, int columnIndex) {
+	return mutiTable.getModel ().getValueAt (rowIndex,columnIndex);
+    }
+
+    public void refreshCheckRowStatus(Documents tempDocuments) {
+	this.documents = tempDocuments;
+	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("refreshCheckRowStatus mutiTable checkRowIndex is -> " + checkRowL);
+	}
+	HashMap<String, Document> tempMap = ClientUtils.exchangeDocuments (tempDocuments);
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("refreshCheckRowStatus tempMap is -> " + tempMap);
+	}
+	for (int i = 0; i < checkRowL.size (); i++) {
+	    Integer checkRowIndex = checkRowL.get (i);
+	    String number = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_NUMBER_COLUMN);
+	    Document document = tempMap.get (number);
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("refreshCheckRowStatus number is -> " + number + " document is -> " + document);
+	    }
+	    mutiTable.getModel ().setValueAt (document.getCadStatus ().getDisplayName (),checkRowIndex,
+		    DEFAULT_STATUS_COLUMN);
+	}
+    }
     
+    public Documents mergeCommitParam () {
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("mergeCommitParam before is -> " + documents);
+	}
+	//LinkedHashMap<rowIndex, HashMap<columnIndex,Object>>
+	List<Document> documentL = documents.getDocuments ();
+	//sort order
+	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("mergeCommitParam mutiTable checkRowIndex is -> " + checkRowL);
+	}
+	for (int i = 0; i < checkRowL.size (); i++) {
+	    Integer checkRowIndex = checkRowL.get (i);
+	    String status = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_STATUS_COLUMN);
+	    boolean enable = ClientUtils.enableObject (status);
+	    if (enable) {
+		Document document = documentL.get (checkRowIndex);
+		String containerName = (String)mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_CONTAINER_COLUMN);
+		String folderName = (String)mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_FOLDER_COLUMN);
+		document.setContainer (new Container (new SimplePdmLinkProduct (null,containerName),new SimpleFolder (null,folderName)));
+	    } 
+	}
+	if (logger.isDebugEnabled ()) {
+	    logger.debug ("mergeCommitParam after is -> " + documents);
+	}
+	return documents;
+    }
 
     @Override
     public void initialize() {
