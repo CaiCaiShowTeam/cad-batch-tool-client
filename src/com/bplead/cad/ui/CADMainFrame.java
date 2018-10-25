@@ -52,7 +52,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	super (CADMainFrame.class);
 	setToolkit (toolkit);
     }
-    
+
     @Override
     public void call(Object object) {
 	reload ();
@@ -74,15 +74,14 @@ public class CADMainFrame extends AbstractFrame implements Callback {
     public double getVerticalProportion() {
 	return 0.99d;
     }
-    
+
     /**
      * TODO
-     * @author zjw
-     * 	       checkin checkout undocheckout
-     * @return 
-     * 2018年10月24日下午9:55:28
+     * 
+     * @author zjw checkin checkout undocheckout
+     * @return 2018年10月24日下午9:55:28
      */
-    public void mergeCommitParam () {
+    public void mergeCommitParam() {
 	CadTablePanel cadTablePanel = westPanel.cadTablePanel;
 	documents = cadTablePanel.mergeCommitParam ();
     }
@@ -124,10 +123,10 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	setJMenuBar (
 		toolkit.getStandardMenuBar (new CheckinActionListenner (),new CheckoutAndDownloadActionListenner ()));
 	logger.info ("initialize " + getClass () + " container panel...");
-	
+
 	// init layout borderLayout
 	getContentPane ().setLayout (new BorderLayout (5,10));
-	
+
 	westPanel = new WestPanel (documents);
 	getContentPane ().add (westPanel,BorderLayout.WEST);
 
@@ -143,6 +142,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
     public class CheckinActionListenner implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
+	    mergeCommitParam ();
 
 	    processorAttachments ();
 	    logger.debug ("processorAttachments after documents is -> " + documents);
@@ -191,8 +191,12 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    logger.info ("CheckinWorker start...");
 	    // upload dwg file
 	    List<Document> documentL = documents.getDocuments ();
+	    List<Integer> checkRows = documents.getCheckRows ();
 	    if (documentL != null && !documentL.isEmpty ()) {
 		for (int i = 0; i < documentL.size (); i++) {
+		    if (!checkRows.contains (i)) {
+			continue;
+		    }
 		    Document document = documentL.get (i);
 		    List<Attachment> attachments = document.getObject ().getAttachments ();
 		    publish (new PopProgress.PromptProgress (getResourceMap ().getString (PROMPT_0) + ( i + 1 ),0));
@@ -242,6 +246,12 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+	    mergeCommitParam ();
+
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("documents getCheckRows is -> " + documents.getCheckRows ());
+	    }
+
 	    // processor checkout
 	    ValidateUtils.validateCheckout (documents);
 
@@ -363,6 +373,8 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+	    mergeCommitParam ();
+	    
 	    // processor cancle checkout
 	    ValidateUtils.validateUndoCheckout (documents);
 

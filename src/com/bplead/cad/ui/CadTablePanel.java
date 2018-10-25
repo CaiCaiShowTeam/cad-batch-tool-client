@@ -550,7 +550,12 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	if (logger.isDebugEnabled ()) {
 	    logger.debug ("mergeCommitParam after is -> " + documents);
 	}
+	documents.setCheckRows (checkRowL);
 	return documents;
+    }
+    
+    public List<Integer> getCheckRows () {
+	return mutiTable.getAllCheckedRows ();
     }
 
     @Override

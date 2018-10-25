@@ -15,6 +15,7 @@ import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.CustomPrompt;
 
 import priv.lee.cad.util.ClientAssert;
+import priv.lee.cad.util.CollectionUtils;
 import priv.lee.cad.util.StringUtils;
 
 public class ValidateUtils {
@@ -23,16 +24,20 @@ public class ValidateUtils {
 
     public static void validateCheckin(Documents documents) {
 	ClientAssert.notNull (documents,"Document is required");
+	List<Integer> checkRows = documents.getCheckRows ();
+	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"not check row");
 	logger.info ("Validate checkin begin...");
 	List<Document> documentL = documents.getDocuments ();
 	ClientAssert.notNull (documentL,"documentL is required");
-	for (Document document : documentL) {
-	    
+	for (int i = 0; i < documentL.size (); i++) {
+	    if (!checkRows.contains (i)) {
+		continue;
+	    }
+	    Document document = documentL.get (i);
 	    validateStatus (document);
-	    
 	    List<Attachment> attachments = document.getObject ().getAttachments ();
 	    ClientAssert.notEmpty (attachments,buildPromptSuffix (document) + CustomPrompt.ATTACHMENTS_NULL);
-	    
+
 	    validateSuffix (attachments,buildPromptSuffix (document));
 
 	    validateProduct (document.getContainer ().getProduct (),buildPromptSuffix (document));
@@ -41,13 +46,19 @@ public class ValidateUtils {
 	}
 	logger.info ("Validate checkin complete...");
     }
-    
-    public static void validateUndoCheckout (Documents documents) {
+
+    public static void validateUndoCheckout(Documents documents) {
 	ClientAssert.notNull (documents,"Document is required");
+	List<Integer> checkRows = documents.getCheckRows ();
+	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"not check row");
 	logger.info ("Validate UndoCheckout begin...");
 	List<Document> documentL = documents.getDocuments ();
 	ClientAssert.notNull (documentL,"documentL is required");
-	for (Document document : documentL) {
+	for (int i = 0; i < documentL.size (); i++) {
+	    if (!checkRows.contains (i)) {
+		continue;
+	    }
+	    Document document = documentL.get (i);
 	    CadStatus cadStatus = document.getCadStatus ();
 	    if (cadStatus == CadStatus.NOT_EXIST) {
 		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NO_PERSISTENCE);
@@ -57,23 +68,28 @@ public class ValidateUtils {
 	}
 	logger.info ("Validate UndoCheckout complete...");
     }
-    
-    
-    public static void validateCheckout (Documents documents) {
- 	ClientAssert.notNull (documents,"Document is required");
- 	logger.info ("Validate Checkout begin...");
- 	List<Document> documentL = documents.getDocuments ();
- 	ClientAssert.notNull (documentL,"documentL is required");
- 	for (Document document : documentL) {
- 	    CadStatus cadStatus = document.getCadStatus ();
- 	    if (cadStatus == CadStatus.NOT_EXIST) {
- 		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NO_PERSISTENCE);
- 	    } else if (cadStatus == CadStatus.CHECK_OUT) {
- 		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.HAS_CHECKOUT);
- 	    }
- 	}
- 	logger.info ("Validate Checkout complete...");
-     }
+
+    public static void validateCheckout(Documents documents) {
+	ClientAssert.notNull (documents,"Document is required");
+	List<Integer> checkRows = documents.getCheckRows ();
+	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"not check row");
+	logger.info ("Validate Checkout begin...");
+	List<Document> documentL = documents.getDocuments ();
+	ClientAssert.notNull (documentL,"documentL is required");
+	for (int i = 0; i < documentL.size (); i++) {
+	    if (!checkRows.contains (i)) {
+		continue;
+	    }
+	    Document document = documentL.get (i);
+	    CadStatus cadStatus = document.getCadStatus ();
+	    if (cadStatus == CadStatus.NOT_EXIST) {
+		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NO_PERSISTENCE);
+	    } else if (cadStatus == CadStatus.CHECK_OUT) {
+		ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.HAS_CHECKOUT);
+	    }
+	}
+	logger.info ("Validate Checkout complete...");
+    }
 
     public static String buildPromptSuffix(Document document) {
 	if (document == null) {
@@ -89,10 +105,10 @@ public class ValidateUtils {
 	}
 	return sb.toString ();
     }
-    
+
     public static void validateStatus(Document document) {
 	CadStatus cadStatus = document.getCadStatus ();
-	//editEnable == null is not persistence
+	// editEnable == null is not persistence
 	if (cadStatus == CadStatus.CHECK_IN || cadStatus == CadStatus.NOT_EXIST) {
 	} else {
 	    ClientAssert.isTrue (false,buildPromptSuffix (document) + CustomPrompt.NOT_CHECKOUT);
