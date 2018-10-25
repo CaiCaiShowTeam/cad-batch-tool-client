@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -96,20 +95,6 @@ public class ClientUtils extends ClientInstanceUtils {
 	return getParentContainer (container.getParent (),clazz);
     }
     
-    public static HashMap<String,Document> exchangeDocuments (Documents documents) {
-	HashMap<String,Document> map = new HashMap<String,Document> ();
-	if (documents == null) {
-	    return map;
-	}
-	List<Document> documentL = documents.getDocuments ();
-	if (documentL != null && documentL.isEmpty ()) {
-	    for (Document document : documentL) {
-		map.put (document.getNumber (),document);
-	    }
-	}
-	return map;
-    }
-
     /**
      * TODO
      * 

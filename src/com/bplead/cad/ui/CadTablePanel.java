@@ -8,7 +8,6 @@ import java.awt.Dimension;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -480,58 +479,28 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	return null;
     }
 
-//    public LinkedHashMap<Integer, HashMap<Integer, Object>> getAllCheckRowValues() {
-//	LinkedHashMap<Integer, HashMap<Integer, Object>> map = new LinkedHashMap<Integer, HashMap<Integer, Object>> ();
-//	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
-//	int colCount = mutiTable.getModel ().getColumnCount ();
-//	if (logger.isDebugEnabled ()) {
-//	    logger.debug ("getAllCheckRowValues checkRowL is -> " + checkRowL);
-//	}
-//	for (int i = 0; i < checkRowL.size (); i++) {
-//	    Integer checkRowIndex = checkRowL.get (i);
-//	    HashMap<Integer, Object> columnValueMap = new HashMap<Integer, Object> ();
-//	    for (int j = 0; j < colCount; j++) {
-//		Object value = mutiTable.getModel ().getValueAt (checkRowIndex,j);
-//		columnValueMap.put (j,value);
-//	    }
-//	    map.put (checkRowIndex,columnValueMap);
-//	}
-//	return map;
-//    }
-
     public Object getCellValue(int rowIndex, int columnIndex) {
 	return mutiTable.getModel ().getValueAt (rowIndex,columnIndex);
     }
 
-    public void refreshCheckRowStatus(Documents tempDocuments) {
-	this.documents = tempDocuments;
+    public void refreshCheckRowStatus(CadStatus cadStatus) {
 	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
 	if (logger.isDebugEnabled ()) {
 	    logger.debug ("refreshCheckRowStatus mutiTable checkRowIndex is -> " + checkRowL);
 	}
-	HashMap<String, Document> tempMap = ClientUtils.exchangeDocuments (tempDocuments);
-	if (logger.isDebugEnabled ()) {
-	    logger.debug ("refreshCheckRowStatus tempMap is -> " + tempMap);
-	}
 	for (int i = 0; i < checkRowL.size (); i++) {
 	    Integer checkRowIndex = checkRowL.get (i);
-	    String number = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_NUMBER_COLUMN);
-	    Document document = tempMap.get (number);
-	    if (logger.isDebugEnabled ()) {
-		logger.debug ("refreshCheckRowStatus number is -> " + number + " document is -> " + document);
-	    }
-	    mutiTable.getModel ().setValueAt (document.getCadStatus ().getDisplayName (),checkRowIndex,
-		    DEFAULT_STATUS_COLUMN);
+	    mutiTable.getModel ().setValueAt (cadStatus.getDisplayName (),checkRowIndex,DEFAULT_STATUS_COLUMN);
 	}
     }
-    
-    public Documents mergeCommitParam () {
+
+    public Documents mergeCommitParam() {
 	if (logger.isDebugEnabled ()) {
 	    logger.debug ("mergeCommitParam before is -> " + documents);
 	}
-	//LinkedHashMap<rowIndex, HashMap<columnIndex,Object>>
+	// LinkedHashMap<rowIndex, HashMap<columnIndex,Object>>
 	List<Document> documentL = documents.getDocuments ();
-	//sort order
+	// sort order
 	List<Integer> checkRowL = mutiTable.getAllCheckedRows ();
 	if (logger.isDebugEnabled ()) {
 	    logger.debug ("mergeCommitParam mutiTable checkRowIndex is -> " + checkRowL);
@@ -542,10 +511,12 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	    boolean enable = ClientUtils.enableObject (status);
 	    if (enable) {
 		Document document = documentL.get (checkRowIndex);
-		String containerName = (String)mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_CONTAINER_COLUMN);
-		String folderName = (String)mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_FOLDER_COLUMN);
-		document.setContainer (new Container (new SimplePdmLinkProduct (null,containerName),new SimpleFolder (null,folderName)));
-	    } 
+		String containerName = (String) mutiTable.getModel ().getValueAt (checkRowIndex,
+			DEFAULT_CONTAINER_COLUMN);
+		String folderName = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_FOLDER_COLUMN);
+		document.setContainer (new Container (new SimplePdmLinkProduct (null,containerName),
+			new SimpleFolder (null,folderName)));
+	    }
 	}
 	if (logger.isDebugEnabled ()) {
 	    logger.debug ("mergeCommitParam after is -> " + documents);
@@ -553,8 +524,8 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	documents.setCheckRows (checkRowL);
 	return documents;
     }
-    
-    public List<Integer> getCheckRows () {
+
+    public List<Integer> getCheckRows() {
 	return mutiTable.getAllCheckedRows ();
     }
 
