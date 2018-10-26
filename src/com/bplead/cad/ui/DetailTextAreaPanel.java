@@ -44,7 +44,7 @@ public class DetailTextAreaPanel extends AbstractPanel {
 
 	scrollArea = new ScrollTextArea (new JScrollPane (),new JTextArea (),dimension);
 
-	scrollArea.setDefaultText (getResourceMap ().getString (DEFAULT_DISPLAY_CONTENT));
+	scrollArea.setDefaultText (getResourceMap ().getString (DEFAULT_DISPLAY_CONTENT) + "\n");
 
 	setBorder (BorderFactory.createTitledBorder (BorderFactory.createEtchedBorder (),
 		getResourceMap ().getString (TITLE),TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,

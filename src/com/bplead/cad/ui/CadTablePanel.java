@@ -508,9 +508,12 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	for (int i = 0; i < checkRowL.size (); i++) {
 	    Integer checkRowIndex = checkRowL.get (i);
 	    String status = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_STATUS_COLUMN);
+	    Document document = documentL.get (checkRowIndex);
+	    //sync cadstatus
+	    document.setCadStatus (CadStatus.toEnumeration (CadStatus.getInnerValueByDisplayName (status)));
 	    boolean enable = ClientUtils.enableObject (status);
+	    //sync container and folder
 	    if (enable) {
-		Document document = documentL.get (checkRowIndex);
 		String containerName = (String) mutiTable.getModel ().getValueAt (checkRowIndex,
 			DEFAULT_CONTAINER_COLUMN);
 		String folderName = (String) mutiTable.getModel ().getValueAt (checkRowIndex,DEFAULT_FOLDER_COLUMN);

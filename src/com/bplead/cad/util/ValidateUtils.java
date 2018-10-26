@@ -25,7 +25,7 @@ public class ValidateUtils {
     public static void validateCheckin(Documents documents) {
 	ClientAssert.notNull (documents,"Document is required");
 	List<Integer> checkRows = documents.getCheckRows ();
-	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"not check row");
+	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"no choose row");
 	logger.info ("Validate checkin begin...");
 	List<Document> documentL = documents.getDocuments ();
 	ClientAssert.notNull (documentL,"documentL is required");
@@ -50,7 +50,7 @@ public class ValidateUtils {
     public static void validateUndoCheckout(Documents documents) {
 	ClientAssert.notNull (documents,"Document is required");
 	List<Integer> checkRows = documents.getCheckRows ();
-	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"not check row");
+	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"no choose row");
 	logger.info ("Validate UndoCheckout begin...");
 	List<Document> documentL = documents.getDocuments ();
 	ClientAssert.notNull (documentL,"documentL is required");
@@ -72,7 +72,7 @@ public class ValidateUtils {
     public static void validateCheckout(Documents documents) {
 	ClientAssert.notNull (documents,"Document is required");
 	List<Integer> checkRows = documents.getCheckRows ();
-	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"not check row");
+	ClientAssert.isTrue (!CollectionUtils.isEmpty (checkRows),"no choose row");
 	logger.info ("Validate Checkout begin...");
 	List<Document> documentL = documents.getDocuments ();
 	ClientAssert.notNull (documentL,"documentL is required");
