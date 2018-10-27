@@ -16,6 +16,7 @@ import com.bplead.cad.bean.SimpleDocument;
 import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.Attachment;
 import com.bplead.cad.bean.io.CadDocuments;
+import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.CustomStyleToolkit;
@@ -98,7 +99,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    CadDocuments cadDocuments = XmlUtils.read (xml,CadDocuments.class);
 	    logger.debug ("xml data object cadDocuments:" + cadDocuments);
 	    this.documents = ClientUtils.initialize (cadDocuments);
-	    logger.debug ("merge plm data result is -> " + documents);
+	    logger.debug ("initialize plm data result is -> " + documents);
 	}
     }
 
@@ -120,8 +121,8 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	toolkit.setListenerMap (listenerMap);
 
 	logger.info ("initialize " + getClass () + " menu bar...");
-	setJMenuBar (
-		toolkit.getStandardMenuBar (new CheckinActionListenner (),new CheckoutAndDownloadActionListenner ()));
+	setJMenuBar (toolkit.getStandardMenuBar (new CheckinActionListenner (this),
+		new CheckoutAndDownloadActionListenner ()));
 	logger.info ("initialize " + getClass () + " container panel...");
 
 	// init layout borderLayout
@@ -140,6 +141,13 @@ public class CADMainFrame extends AbstractFrame implements Callback {
     }
 
     public class CheckinActionListenner implements ActionListener {
+
+	private Callback callback;
+
+	CheckinActionListenner(Callback callback) {
+	    this.callback = callback;
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	    mergeCommitParam ();
@@ -150,7 +158,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    // checkin before validate basic data
 	    ValidateUtils.validateCheckin (documents);
 
-	    CheckinWorker worker = new CheckinWorker (documents);
+	    CheckinWorker worker = new CheckinWorker (documents,callback);
 	    worker.execute ();
 	}
 
@@ -165,8 +173,9 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	}
     }
 
-    private class CheckinWorker extends SwingWorker<Boolean, PopProgress.PromptProgress> implements Callback {
+    private class CheckinWorker extends SwingWorker<Boolean, PopProgress.PromptProgress> {
 	private Documents documents;
+	private Callback callback;
 	private PopProgress progress;
 	private final String PROMPT_0 = "checkin.prompt.0";
 	private final String PROMPT_100 = "checkin.prompt.100";
@@ -175,15 +184,11 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	private final String PROMPT_SUCCESSED = "checkin.prompt.successed";
 	private final String PROMPT_TITLE = "checkin.prompt.title";
 
-	public CheckinWorker(Documents documents) {
+	public CheckinWorker(Documents documents, Callback callback) {
 	    this.documents = documents;
-	    this.progress = new PopProgress (this);
+	    this.callback = callback;
+	    this.progress = new PopProgress (callback);
 	    progress.activate ();
-	}
-
-	@Override
-	public void call(Object object) {
-	    logger.debug ("In CheckinWorker call ... " + object);
 	}
 
 	@Override
@@ -225,6 +230,10 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	@Override
 	protected void done() {
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString (PROMPT_100),100));
+	    if (callback instanceof CADMainFrame) {
+		CADMainFrame cadMainFrame = (CADMainFrame) callback;
+		cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_IN);
+	    }
 	}
 
 	@Override
@@ -236,7 +245,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	}
     }
 
-    public class CheckoutActionListener implements ActionListener, Callback {
+    public class CheckoutActionListener implements ActionListener {
 
 	private Callback callback;
 
@@ -255,46 +264,36 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    // processor checkout
 	    ValidateUtils.validateCheckout (documents);
 
-	    CheckoutWorker worker = new CheckoutWorker (documents);
+	    CheckoutWorker worker = new CheckoutWorker (documents,callback);
 	    worker.execute ();
+
 	}
 
-	@Override
-	public void call(Object object) {
-	    logger.debug ("in CheckoutActionListener call object is -> " + object + " callback is -> " + callback);
-	}
     }
 
-    public class CheckoutAndDownloadActionListenner implements ActionListener, Callback {
+    public class CheckoutAndDownloadActionListenner implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	    // new SearchForDownloadDialog (this).activate ();
 	}
 
-	@Override
-	public void call(Object object) {
-	    ClientUtils.open ((File) object);
-	}
     }
 
-    private class CheckoutWorker extends SwingWorker<Boolean, PopProgress.PromptProgress> implements Callback {
+    private class CheckoutWorker extends SwingWorker<Boolean, PopProgress.PromptProgress> {
 	private Documents documents;
+	private Callback callback;
 	private PopProgress progress;
 	private final String PROMPT_FAILED = "checkout.prompt.failed";
 	private final String PROMPT_SUCCESSED = "checkout.prompt.successed";
 	private final String PROMPT_TITLE = "checkout.prompt.title";
 	private List<SimpleDocument> resultL;
 
-	public CheckoutWorker(Documents documents) {
+	public CheckoutWorker(Documents documents, Callback callback) {
 	    this.documents = documents;
-	    this.progress = new PopProgress (this);
+	    this.callback = callback;
+	    this.progress = new PopProgress (callback);
 	    progress.activate ();
-	}
-
-	@Override
-	public void call(Object object) {
-	    logger.debug ("in CheckoutWorker call ... " + object);
 	}
 
 	@Override
@@ -320,6 +319,13 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	protected void done() {
 	    // TODO 1.设置操作可见性 2.刷新面板
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString ("completed checkout ..."),100));
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("callback is -> " + ( callback == null ? "callback is null..." : callback.getClass () ));
+	    }
+	    if (callback instanceof CADMainFrame) {
+		CADMainFrame cadMainFrame = (CADMainFrame) callback;
+		cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_OUT);
+	    }
 	}
 
 	@Override
@@ -363,7 +369,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	}
     }
 
-    public class UndoCheckoutActionListener implements ActionListener, Callback {
+    public class UndoCheckoutActionListener implements ActionListener {
 
 	private Callback callback;
 
@@ -374,37 +380,30 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 	    mergeCommitParam ();
-	    
+
 	    // processor cancle checkout
 	    ValidateUtils.validateUndoCheckout (documents);
 
-	    UndoCheckoutWorker worker = new UndoCheckoutWorker (documents);
+	    UndoCheckoutWorker worker = new UndoCheckoutWorker (documents,callback);
 	    worker.execute ();
 	}
 
-	@Override
-	public void call(Object object) {
-	    logger.debug ("in UndoCheckoutActionListener object is -> " + object + " callback is -> " + callback);
-	}
     }
 
-    private class UndoCheckoutWorker extends SwingWorker<Boolean, PopProgress.PromptProgress> implements Callback {
+    private class UndoCheckoutWorker extends SwingWorker<Boolean, PopProgress.PromptProgress> {
 	private Documents documents;
+	private Callback callback;
 	private PopProgress progress;
 	private final String PROMPT_FAILED = "undocheckout.prompt.failed";
 	private final String PROMPT_SUCCESSED = "undocheckout.prompt.successed";
 	private final String PROMPT_TITLE = "undocheckout.prompt.title";
 	private List<SimpleDocument> resultL;
 
-	public UndoCheckoutWorker(Documents documents) {
+	public UndoCheckoutWorker(Documents documents, Callback callback) {
 	    this.documents = documents;
-	    this.progress = new PopProgress (this);
+	    this.callback = callback;
+	    this.progress = new PopProgress (callback);
 	    progress.activate ();
-	}
-
-	@Override
-	public void call(Object object) {
-	    logger.debug ("in UndoCheckoutWorker call ... " + object);
 	}
 
 	@Override
@@ -412,7 +411,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    logger.info ("undoCheckoutWorker start...");
 
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString ("start undocheckout ..."),0));
-	    resultL = (List<SimpleDocument>) ClientUtils.checkout (documents);
+	    resultL = (List<SimpleDocument>) ClientUtils.undoCheckout (documents);
 	    if (!CollectionUtils.isEmpty (resultL)) {
 		JOptionPane.showMessageDialog (null,getResourceMap ().getString (PROMPT_SUCCESSED),
 			getResourceMap ().getString (PROMPT_TITLE),JOptionPane.INFORMATION_MESSAGE);
@@ -430,6 +429,13 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	protected void done() {
 	    // TODO 1.设置操作可见性 2.刷新面板
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString ("completed undocheckout"),100));
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("callback is -> " + ( callback == null ? "callback is null..." : callback.getClass () ));
+	    }
+	    if (callback instanceof CADMainFrame) {
+		CADMainFrame cadMainFrame = (CADMainFrame) callback;
+		cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_IN);
+	    }
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -22,10 +21,8 @@ import com.bplead.cad.bean.client.Temporary;
 import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.Attachment;
 import com.bplead.cad.bean.io.AttachmentModel;
-import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadDocuments;
 import com.bplead.cad.bean.io.CadStatus;
-import com.bplead.cad.bean.io.Container;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.model.CustomPrompt;
@@ -103,34 +100,35 @@ public class ClientUtils extends ClientInstanceUtils {
      * @return 2018年10月17日下午3:29:38
      */
     public static Documents initialize(CadDocuments cadDocuments) {
-	// ClientAssert.notNull (cadDocuments,"cadDocuments is required");
-	// return invoke (RemoteMethod.INIT_DATA, new Class<?> [] {
-	// CadDocuments.class }, new Object [] { cadDocuments },
-	// Documents.class);
-	List<Document> docList = new ArrayList<Document> ();
-	List<CadDocument> cadDocList = cadDocuments.getCadDocs ();
-	for (int i = 0; i < cadDocList.size (); i++) {
-	    CadDocument cadDocument = cadDocList.get (i);
-	    Document document = new Document ();
-	    if (i == 0) {
-		document.setOid ("wt.epm.EPMDocument:123456" + i);
-		document.setNumber (cadDocument.getNumber ());
-		document.setName (cadDocument.getName ());
-		Container container = new Container ();
-		container.setProduct (new SimplePdmLinkProduct ("wt.pdmlink.PDMLinkProduct:123456" + i,"GOLF"));
-		container.setFolder (new SimpleFolder ("wt.folder.SubFolder:123456" + i,"/Default/03三维模型"));
-		document.setContainer (container);
-		document.setCadStatus (CadStatus.CHECK_IN);
-		document.setObject (cadDocument);
-	    } else {
-		document.setObject (cadDocument);
-	    }
-
-	    docList.add (document);
-	}
-	Documents document = new Documents ();
-	document.setDocuments (docList);
-	return document;
+	ClientAssert.notNull (cadDocuments,"cadDocuments is required");
+	return invoke (RemoteMethod.INIT_DATA,new Class<?> [] { CadDocuments.class },new Object [] { cadDocuments },
+		Documents.class);
+	// List<Document> docList = new ArrayList<Document> ();
+	// List<CadDocument> cadDocList = cadDocuments.getCadDocs ();
+	// for (int i = 0; i < cadDocList.size (); i++) {
+	// CadDocument cadDocument = cadDocList.get (i);
+	// Document document = new Document ();
+	// if (i == 0) {
+	// document.setOid ("wt.epm.EPMDocument:123456" + i);
+	// document.setNumber (cadDocument.getNumber ());
+	// document.setName (cadDocument.getName ());
+	// Container container = new Container ();
+	// container.setProduct (new SimplePdmLinkProduct
+	// ("wt.pdmlink.PDMLinkProduct:123456" + i,"GOLF"));
+	// container.setFolder (new SimpleFolder ("wt.folder.SubFolder:123456" +
+	// i,"/Default/03三维模型"));
+	// document.setContainer (container);
+	// document.setCadStatus (CadStatus.CHECK_IN);
+	// document.setObject (cadDocument);
+	// } else {
+	// document.setObject (cadDocument);
+	// }
+	//
+	// docList.add (document);
+	// }
+	// Documents document = new Documents ();
+	// document.setDocuments (docList);
+	// return document;
     }
 
     public static boolean checkin(Documents documents) {
