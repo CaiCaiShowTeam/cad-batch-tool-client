@@ -4,8 +4,11 @@ import java.awt.Desktop;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
@@ -95,7 +98,6 @@ public class ClientUtils extends ClientInstanceUtils {
     /**
      * TODO
      * 
-     * @author zjw
      * @param cadDocuments
      * @return 2018年10月17日下午3:29:38
      */
@@ -282,5 +284,26 @@ public class ClientUtils extends ClientInstanceUtils {
 	public void setType(String type) {
 	    this.type = type;
 	}
+    }
+    
+    public static String exportStringToTxt(String text) throws FileNotFoundException {
+	File fileDir = ClientUtils.getTemporaryDirectory ();
+
+	File file = new File (
+		fileDir.getAbsolutePath () + File.separator + Calendar.getInstance ().getTimeInMillis () + ".txt");
+	PrintWriter pw = null;
+	try {
+	    pw = new PrintWriter (file);
+	    pw.print (text);
+	}
+	catch(FileNotFoundException e) {
+	    e.printStackTrace();
+	    throw e;
+	} finally {
+	    if (pw != null) {
+		pw.close ();
+	    }
+	}
+	return file.getAbsolutePath ();
     }
 }

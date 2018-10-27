@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import priv.lee.cad.model.MiddleAlignGap;
 
 /**
- * @author zjw 2018年10月17日下午7:33:02
+ * 2018年10月17日下午7:33:02
  */
 public class ScrollTextArea extends JComponent {
 

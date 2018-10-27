@@ -40,7 +40,7 @@ import priv.lee.cad.util.ClientAssert;
 import priv.lee.cad.util.StringUtils;
 
 /**
- * @author zjw 2018年10月19日下午1:44:35
+ * 2018年10月19日下午1:44:35
  */
 public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 
@@ -244,7 +244,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     }
 
     /**
-     * @author zjw
      * @param text
      *            update content
      * @param type
@@ -266,7 +265,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     }
 
     /**
-     * @author zjw
      * @param text
      *            update content
      * @param type
@@ -288,7 +286,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     }
 
     /**
-     * @author zjw
      * @param text
      *            update content
      * @param type
@@ -328,7 +325,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     }
 
     /**
-     * @author zjw
      * @param text
      *            update content
      * @param type
@@ -370,7 +366,6 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
     }
 
     /**
-     * @author zjw
      * @param text
      *            update content
      * @param type

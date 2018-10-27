@@ -13,7 +13,7 @@ import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * @author zjw 2018年10月22日下午6:30:43
+ * 2018年10月22日下午6:30:43
  */
 public class BottonColumnRenderer extends JButton implements TableCellRenderer {
 

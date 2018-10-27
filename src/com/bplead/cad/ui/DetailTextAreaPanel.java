@@ -11,7 +11,7 @@ import javax.swing.border.TitledBorder;
 import priv.lee.cad.ui.AbstractPanel;
 
 /**
- * @author zjw 2018年10月17日下午6:57:56
+ * 2018年10月17日下午6:57:56
  */
 public class DetailTextAreaPanel extends AbstractPanel {
 
@@ -25,6 +25,10 @@ public class DetailTextAreaPanel extends AbstractPanel {
     public void clear() {
 	// scrollArea.clear ();
 	scrollArea.setDefaultText (getResourceMap ().getString (DEFAULT_DISPLAY_CONTENT));
+    }
+    
+    public String getText () {
+	return scrollArea.getText ();
     }
 
     @Override

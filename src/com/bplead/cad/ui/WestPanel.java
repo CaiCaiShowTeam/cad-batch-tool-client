@@ -16,7 +16,7 @@ import priv.lee.cad.model.MiddleAlignGap;
 import priv.lee.cad.ui.AbstractPanel;
 
 /**
- * @author zjw 2018年10月20日上午9:59:05
+ * 2018年10月20日上午9:59:05
  */
 public class WestPanel extends AbstractPanel {
 
