@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -345,27 +346,25 @@ public class CADMainFrame extends AbstractFrame implements Callback {
     }
 
     public class ExportDetailActionListenner implements ActionListener {
+	private final String PROMPT_FAILED = "export.prompt.failed";
+	private final String PROMPT_SUCCESSED = "export.prompt.successed";
+	private final String PROMPT_TITLE = "export.prompt.title";
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String> () {
-		@Override
-		protected Boolean doInBackground() throws Exception {
-		    int i = 0;
-		    while (i < 50) {
-			publish ("测试输入详细信息..." + i);
-			i++;
-		    }
-		    return true;
-		}
-
-		@Override
-		protected void process(List<String> chunks) {
-		    for (String s : chunks) {
-			detailTextAreaPanel.println (s);
-		    }
-		}
-	    };
-	    worker.execute ();
+	    String text = detailTextAreaPanel.getText ();
+	    String filePath;
+	    try {
+		filePath = ClientUtils.exportStringToTxt (text);
+		JOptionPane.showMessageDialog (null,
+			getResourceMap ().getString (PROMPT_SUCCESSED) + ",请查看文件" + filePath,
+			getResourceMap ().getString (PROMPT_TITLE),JOptionPane.INFORMATION_MESSAGE);
+	    }
+	    catch(FileNotFoundException e1) {
+		e1.printStackTrace ();
+		JOptionPane.showMessageDialog (null,getResourceMap ().getString (PROMPT_FAILED),
+			getResourceMap ().getString (PROMPT_TITLE),JOptionPane.INFORMATION_MESSAGE);
+	    }
 	}
     }
 

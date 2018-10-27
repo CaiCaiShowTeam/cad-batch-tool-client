@@ -26,6 +26,10 @@ public class DetailTextAreaPanel extends AbstractPanel {
 	// scrollArea.clear ();
 	scrollArea.setDefaultText (getResourceMap ().getString (DEFAULT_DISPLAY_CONTENT));
     }
+    
+    public String getText () {
+	return scrollArea.getText ();
+    }
 
     @Override
     public double getHorizontalProportion() {
