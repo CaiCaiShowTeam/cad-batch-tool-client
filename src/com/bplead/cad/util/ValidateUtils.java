@@ -110,7 +110,7 @@ public class ValidateUtils {
     public static void validateStatus(Document document) {
 	CadStatus cadStatus = document.getCadStatus ();
 	// editEnable == null is not persistence
-	if (cadStatus == CadStatus.CHECK_IN || cadStatus == CadStatus.NOT_EXIST) {
+	if (cadStatus == CadStatus.CHECK_OUT || cadStatus == CadStatus.NOT_EXIST) {
 	} else {
 	    ClientAssert.isTrue (false,buildPromptSuffix (document) + RuntimeExceptionPanel.DELIM +  CustomPrompt.NOT_CHECKOUT);
 	}

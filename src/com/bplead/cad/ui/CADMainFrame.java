@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.bplead.cad.bean.SimpleDocument;
 import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.Attachment;
+import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadDocuments;
 import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Document;
@@ -246,6 +247,21 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 		    if (callback instanceof CADMainFrame) {
 			CADMainFrame cadMainFrame = (CADMainFrame) callback;
 			cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_IN);
+			
+			//reload documents
+			List<Document> documentL = documents.getDocuments ();
+			    List<Integer> checkRows = documents.getCheckRows ();
+			    if (documentL != null && !documentL.isEmpty ()) {
+				for (int i = 0; i < documentL.size (); i++) {
+				    if (!checkRows.contains (i)) {
+					continue;
+				    }
+				    Document document = documentL.get (i);
+				    CadDocument cadDocument = (CadDocument) document.getObject ();
+				    document.setNumber (cadDocument.getNumber ());
+				    document.setName (cadDocument.getName ());
+				}
+			    }
 		    }
 		}
 	    }
