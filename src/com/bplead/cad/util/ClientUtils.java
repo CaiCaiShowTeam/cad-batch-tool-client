@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -53,9 +54,20 @@ public class ClientUtils extends ClientInstanceUtils {
 	for (Attachment attachment : attachments) {
 	    File file = new File (attachment.getAbsolutePath ());
 	    attachment.setName (file.getName ());
+	    attachment.setRealName (file.getName ());
 	    attachment.setPrimary (file.getName ().toLowerCase ().endsWith (primarySuffix));
 	}
 	return attachments;
+    }
+    
+    public static String buildNewFileName (File file) {
+	if (file == null) {
+	    return null;
+	}
+	String fileName = file.getName ();
+	String extension = StringUtils.substringAfterLast (fileName,".");
+	String baseName = StringUtils.substringBeforeLast (fileName,".");
+	return baseName + "_" + UUID.randomUUID () + "." + extension;
     }
 
     public static boolean enableObject(Document document) {

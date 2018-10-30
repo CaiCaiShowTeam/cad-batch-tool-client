@@ -137,4 +137,34 @@ public class FTPUtils {
 		}
 		return upload;
 	}
+	
+	public boolean upload(File localFile,String fileName) throws IOException {
+		ClientAssert.notNull(localFile, "Local file is required");
+
+		boolean upload = false;
+		if (!connect()) {
+			return upload;
+		}
+
+		FileInputStream input = null;
+		try {
+			input = new FileInputStream(localFile);
+			ftpClient.changeWorkingDirectory(path);
+			ftpClient.enterLocalPassiveMode();
+			upload = ftpClient.storeFile(new String(fileName.getBytes(UTF_8), ISO_8859_1), input);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (input != null) {
+				try {
+					input.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return upload;
+	}
 }

@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -207,7 +208,13 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 		    publish (new PopProgress.PromptProgress (getResourceMap ().getString (PROMPT_0) + ( i + 1 ),0));
 		    for (Attachment attachment : attachments) {
 			File file = new File (attachment.getAbsolutePath ());
-			FTPUtils.newInstance ().upload (file);
+			//build new filename: oldfilename + time
+			String newFileName = ClientUtils.buildNewFileName (file);
+			if (logger.isDebugEnabled ()) {
+			    logger.debug ("客户端文件路径 is -> " + attachment.getAbsolutePath () + " ftp到服务器端后新的文件名 is -> " + newFileName);
+			}
+			attachment.setName (newFileName);
+			FTPUtils.newInstance ().upload (file,newFileName);
 		    }
 		}
 	    }
@@ -230,9 +237,23 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	@Override
 	protected void done() {
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString (PROMPT_100),100));
-	    if (callback instanceof CADMainFrame) {
-		CADMainFrame cadMainFrame = (CADMainFrame) callback;
-		cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_IN);
+	    try {
+		boolean result = get ();
+		if (logger.isInfoEnabled ()) {
+		    logger.info ("check in result is -> " + result);
+		}
+		if (result) {
+		    if (callback instanceof CADMainFrame) {
+			CADMainFrame cadMainFrame = (CADMainFrame) callback;
+			cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_IN);
+		    }
+		}
+	    }
+	    catch(InterruptedException e) {
+		e.printStackTrace();
+	    }
+	    catch(ExecutionException e) {
+		e.printStackTrace();
 	    }
 	}
 
