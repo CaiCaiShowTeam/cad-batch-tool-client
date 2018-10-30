@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -230,9 +231,23 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	@Override
 	protected void done() {
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString (PROMPT_100),100));
-	    if (callback instanceof CADMainFrame) {
-		CADMainFrame cadMainFrame = (CADMainFrame) callback;
-		cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_IN);
+	    try {
+		boolean result = get ();
+		if (logger.isInfoEnabled ()) {
+		    logger.info ("check in result is -> " + result);
+		}
+		if (result) {
+		    if (callback instanceof CADMainFrame) {
+			CADMainFrame cadMainFrame = (CADMainFrame) callback;
+			cadMainFrame.westPanel.cadTablePanel.refreshCheckRowStatus (CadStatus.CHECK_IN);
+		    }
+		}
+	    }
+	    catch(InterruptedException e) {
+		e.printStackTrace();
+	    }
+	    catch(ExecutionException e) {
+		e.printStackTrace();
 	    }
 	}
 
