@@ -1,65 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cad>
-	<simpleDoc number="图纸代号/外购件图号" name="图纸名称" source="自制件/外购件"> <!-- number:Windchill代号;name:Windchill零部件名称; -->
-		<materialModel>原材料规格/外构件规格</materialModel> <!-- Windchill原材料规格 -->
-		<materialNum>原材料代码/图纸代号</materialNum> <!-- Windchill原材料物料编码 -->
-		<partSize>零件尺寸</partSize> <!-- source为自制件时，无该属性 -->
-		<unitModel>机组型号</unitModel>
-		<weight>重量</weight>
-		<proportion>比例</proportion> <!-- Windchill中无对应属性 -->
-		<size>图幅</size>
-		<pageIndex>页码</pageIndex> <!-- Windchill中无对应属性 -->
-		<pageSize>总页码</pageSize> <!-- Windchill中无对应属性 -->
-		<keyIdentity>关键件标识</keyIdentity>
-		<partType>零部件类型</partType> <!-- source为外购件时，无该属性 -->
+    <simpleDoc number="图纸代号/外购件图号" name="图纸名称" type="零部件类型">
+        <materialModel>原材料规格/外构件规格</materialModel>
+        <materialNum>原材料代码/图纸代号</materialNum>
+        <partSize>零件尺寸</partSize>
+        <unitModel>机组型号</unitModel>
+        <weight>重量</weight>
+        <proportion>比例</proportion>
+        <size>图幅</size>
+        <pageIndex>页码</pageIndex>
+        <pageSize>总页码</pageSize>
+        <keyIdentity>关键件标识</keyIdentity>
         <detail>
-            <order>序号1</order>
-            <number>图纸代号/外购件图号1</number>
-            <name>图纸名称1</name>
-            <quantity>数量1</quantity>
-            <unit>单位1</unit>
-            <weight>总重1</weight>
-            <materialModel>规格1</materialModel>
-            <keyIdentity>关键件标识1</keyIdentity>
-            <partSize>零件尺寸1</partSize>
-            <unitModel>机组型号1</unitModel>
+            <sn>明细栏序号</sn>
+            <number>明细栏代号</number>
+            <name>明细栏名称</name>
+            <quantity>数量</quantity>
+            <materialModel>明细栏材料规格</materialModel>
+            <sigletonWeight>单件重量</sigletonWeight>
+            <totalWeight>总重量</totalWeight>
+            <desciption>备注</desciption>
         </detail>
-          <detail>
-            <order>序号2</order>
-            <number>图纸代号/外购件图号2</number>
-            <name>图纸名称2</name>
-            <quantity>数量2</quantity>
-            <unit>单位2</unit>
-            <weight>总重2</weight>
-            <materialModel>规格2</materialModel>
-            <keyIdentity>关键件标识2</keyIdentity>
-            <partSize>零件尺寸2</partSize>
-            <unitModel>机组型号2</unitModel>
-        </detail>
-		<attachment>
-			<absolutePath>C://1.dwg</absolutePath>
-		</attachment>
-		<attachment>
-			<absolutePath>C://2.pdf</absolutePath>
-		</attachment>
-	</simpleDoc>
-	<simpleDoc number="图纸代号/外购件图号" name="图纸名称" source="自制件/外购件"> <!-- number:Windchill代号;name:Windchill零部件名称; -->
-		<materialModel>原材料规格/外构件规格</materialModel> <!-- Windchill原材料规格 -->
-		<materialNum>原材料代码/图纸代号</materialNum> <!-- Windchill原材料物料编码 -->
-		<partSize>零件尺寸</partSize> <!-- source为自制件时，无该属性 -->
-		<unitModel>机组型号</unitModel>
-		<weight>重量</weight>
-		<proportion>比例</proportion> <!-- Windchill中无对应属性 -->
-		<size>图幅</size>
-		<pageIndex>页码</pageIndex> <!-- Windchill中无对应属性 -->
-		<pageSize>总页码</pageSize> <!-- Windchill中无对应属性 -->
-		<keyIdentity>关键件标识</keyIdentity>
-		<partType>零部件类型</partType> <!-- source为外购件时，无该属性 -->
-		<attachment>
-			<absolutePath>C://1.dwg</absolutePath>
-		</attachment>
-		<attachment>
-			<absolutePath>C://2.pdf</absolutePath>
-		</attachment>
-	</simpleDoc>
+        <attachment>
+            <absolutePath>C://1.dwg</absolutePath>
+        </attachment>
+    </simpleDoc>
+    <simpleDoc number="图纸代号/外购件图号" name="图纸名称" type="零部件类型">
+        <materialModel>原材料规格/外构件规格</materialModel>
+        <materialNum>原材料代码/图纸代号</materialNum>
+        <partSize>零件尺寸</partSize>
+        <unitModel>机组型号</unitModel>
+        <weight>重量</weight>
+        <proportion>比例</proportion>
+        <size>图幅</size>
+        <pageIndex>页码</pageIndex>
+        <pageSize>总页码</pageSize>
+        <keyIdentity>关键件标识</keyIdentity>
+        <attachment>
+            <absolutePath>C://1.dwg</absolutePath>
+        </attachment>
+    </simpleDoc>
+    <simpleDoc number="图纸代号/外购件图号" name="图纸名称" type="零部件类型">
+        <materialModel>原材料规格/外构件规格</materialModel>
+        <materialNum>原材料代码/图纸代号</materialNum>
+        <partSize>零件尺寸</partSize>
+        <unitModel>机组型号</unitModel>
+        <weight>重量</weight>
+        <proportion>比例</proportion>
+        <size>图幅</size>
+        <pageIndex>页码</pageIndex>
+        <pageSize>总页码</pageSize>
+        <keyIdentity>关键件标识</keyIdentity>
+        <attachment>
+            <absolutePath>C://1.dwg</absolutePath>
+        </attachment>
+    </simpleDoc>
 </cad>
