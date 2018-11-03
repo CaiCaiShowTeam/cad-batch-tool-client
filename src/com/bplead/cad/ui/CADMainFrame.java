@@ -215,7 +215,10 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 			    logger.debug ("客户端文件路径 is -> " + attachment.getAbsolutePath () + " ftp到服务器端后新的文件名 is -> " + newFileName);
 			}
 			attachment.setName (newFileName);
-			FTPUtils.newInstance ().upload (file,newFileName);
+			boolean upload = FTPUtils.newInstance ().upload (file,newFileName);
+			if (logger.isDebugEnabled ()) {
+			    logger.debug ("上传客户端文件[" + attachment.getAbsolutePath () + "]到ftp服务器结果 is -> " + upload);
+			}
 		    }
 		}
 	    }
