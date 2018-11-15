@@ -61,8 +61,8 @@ public class ClientUtils extends ClientInstanceUtils {
 	}
 	return attachments;
     }
-    
-    public static String buildNewFileName (File file) {
+
+    public static String buildNewFileName(File file) {
 	if (file == null) {
 	    return null;
 	}
@@ -80,7 +80,7 @@ public class ClientUtils extends ClientInstanceUtils {
 	    return false;
 	}
     }
-    
+
     public static boolean enableObject(CadStatus cadStatus) {
 	if (cadStatus == CadStatus.NOT_EXIST) {
 	    return true;
@@ -88,7 +88,7 @@ public class ClientUtils extends ClientInstanceUtils {
 	    return false;
 	}
     }
-    
+
     public static boolean enableObject(String status) {
 	CadStatus cadStatus = getStatusByDisplay (status);
 	return enableObject (cadStatus);
@@ -100,7 +100,7 @@ public class ClientUtils extends ClientInstanceUtils {
 	}
 	return CadStatus.toEnumeration (CadStatus.getInnerValueByDisplayName (display));
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> T getParentContainer(java.awt.Container container, Class<T> clazz) {
 	if (clazz.isAssignableFrom (container.getClass ())) {
@@ -108,7 +108,7 @@ public class ClientUtils extends ClientInstanceUtils {
 	}
 	return getParentContainer (container.getParent (),clazz);
     }
-    
+
     /**
      * TODO
      * 
@@ -153,13 +153,13 @@ public class ClientUtils extends ClientInstanceUtils {
 		Boolean.class);
     }
 
-	@SuppressWarnings("unchecked")
-	public static List<SimpleDocument> search(String number, String name) {
-		ClientAssert.isTrue(StringUtils.hasText(number) || StringUtils.hasText(name), "Number or name is requried");
-		return invoke(RemoteMethod.SEARCH, new Class<?>[] { String.class, String.class }, new Object[] { number, name },
-				List.class);
-	}
-    
+    @SuppressWarnings("unchecked")
+    public static List<SimpleDocument> search(String number, String name) {
+	ClientAssert.isTrue (StringUtils.hasText (number) || StringUtils.hasText (name),"Number or name is requried");
+	return invoke (RemoteMethod.SEARCH,new Class<?> [] { String.class, String.class },
+		new Object [] { number, name },List.class);
+    }
+
     @SuppressWarnings("unchecked")
     public static List<SimpleDocument> undoCheckout(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");
@@ -222,18 +222,17 @@ public class ClientUtils extends ClientInstanceUtils {
     public static List<SimplePdmLinkProduct> getSimplePdmLinkProducts() {
 	return invoke (RemoteMethod.GET_SIMPLE_CONTAINERS,null,null,List.class);
     }
-    
-	@SuppressWarnings("unchecked")
-	public static List<PDMInfo> getPDMInfos() {
-		return invoke(RemoteMethod.GETPDMINFOS, new Class<?>[] {}, new Object[] {},
-				List.class);
-	}
-	
-	public static BOMInfo getBomDetails(String partNumber) {
-		ClientAssert.isTrue(StringUtils.hasText(partNumber), "PartNumber is requried");
-		return invoke(RemoteMethod.GETPDMINFOS, new Class<?>[] {String.class}, new Object[] {partNumber},
-				BOMInfo.class);
-	}
+
+    @SuppressWarnings("unchecked")
+    public static List<PDMInfo> getPDMInfos() {
+	return invoke (RemoteMethod.GETPDMINFOS,new Class<?> [] {},new Object [] {},List.class);
+    }
+
+    public static BOMInfo getBomDetails(String partNumber) {
+	ClientAssert.isTrue (StringUtils.hasText (partNumber),"PartNumber is requried");
+	return invoke (RemoteMethod.GETPDMINFOS,new Class<?> [] { String.class },new Object [] { partNumber },
+		BOMInfo.class);
+    }
 
     public static void open(File directory) {
 	if (directory == null) {
@@ -318,7 +317,7 @@ public class ClientUtils extends ClientInstanceUtils {
 	    this.type = type;
 	}
     }
-    
+
     public static String exportStringToTxt(String text) throws FileNotFoundException {
 	File fileDir = ClientUtils.getTemporaryDirectory ();
 
@@ -330,9 +329,10 @@ public class ClientUtils extends ClientInstanceUtils {
 	    pw.print (text);
 	}
 	catch(FileNotFoundException e) {
-	    e.printStackTrace();
+	    e.printStackTrace ();
 	    throw e;
-	} finally {
+	}
+	finally {
 	    if (pw != null) {
 		pw.close ();
 	    }
