@@ -17,7 +17,9 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.bean.BOMInfo;
 import com.bplead.cad.bean.DataContent;
+import com.bplead.cad.bean.PDMInfo;
 import com.bplead.cad.bean.SimpleDocument;
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
@@ -151,6 +153,13 @@ public class ClientUtils extends ClientInstanceUtils {
 		Boolean.class);
     }
 
+	@SuppressWarnings("unchecked")
+	public static List<SimpleDocument> search(String number, String name) {
+		ClientAssert.isTrue(StringUtils.hasText(number) || StringUtils.hasText(name), "Number or name is requried");
+		return invoke(RemoteMethod.SEARCH, new Class<?>[] { String.class, String.class }, new Object[] { number, name },
+				List.class);
+	}
+    
     @SuppressWarnings("unchecked")
     public static List<SimpleDocument> undoCheckout(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");
@@ -213,6 +222,18 @@ public class ClientUtils extends ClientInstanceUtils {
     public static List<SimplePdmLinkProduct> getSimplePdmLinkProducts() {
 	return invoke (RemoteMethod.GET_SIMPLE_CONTAINERS,null,null,List.class);
     }
+    
+	@SuppressWarnings("unchecked")
+	public static List<PDMInfo> getPDMInfos() {
+		return invoke(RemoteMethod.GETPDMINFOS, new Class<?>[] {}, new Object[] {},
+				List.class);
+	}
+	
+	public static BOMInfo getBomDetails(String partNumber) {
+		ClientAssert.isTrue(StringUtils.hasText(partNumber), "PartNumber is requried");
+		return invoke(RemoteMethod.GETPDMINFOS, new Class<?>[] {String.class}, new Object[] {partNumber},
+				BOMInfo.class);
+	}
 
     public static void open(File directory) {
 	if (directory == null) {
