@@ -2,19 +2,25 @@ package com.bplead.cad.ui;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.LayoutManager;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.poifs.property.Parent;
+
+import com.bplead.cad.util.ReadToXml;
 
 import priv.lee.cad.model.Callback;
 import priv.lee.cad.ui.AbstractDialog;
@@ -22,8 +28,10 @@ import priv.lee.cad.ui.AbstractPanel;
 import priv.lee.cad.ui.Option;
 import priv.lee.cad.ui.OptionPanel;
 import priv.lee.cad.ui.PromptTextField;
+import priv.lee.cad.util.ClientAssert;
+import priv.lee.cad.util.StringUtils;
 
-public class ChooseDrawingDialog extends AbstractDialog implements ActionListener {
+public class ChooseDrawingDialog extends AbstractDialog implements ActionListener, Runnable {
 	private final String BUTTON_ICON = "folder.search.icon";
 
 	private static LayoutManager rightLayout = new FlowLayout(FlowLayout.RIGHT);
@@ -75,7 +83,30 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			new LocalFileChooser(JFileChooser.DIRECTORIES_ONLY, setting);
+			DefaultTableModel tableModel = (DefaultTableModel) searchResultPanel.table.getModel();
+			int rowCount = tableModel.getRowCount();
+			String filePath = "";
+			for (int i =0; i <rowCount ; i++) {
+				Boolean isSelected = (Boolean) searchResultPanel.table.getValueAt(i, 0);
+				if (isSelected) {
+					if(StringUtils.isEmpty(filePath)) {
+						filePath = "\"" +  searchResultPanel.table.getValueAt(i, 3) + "\"";
+					}else {
+						filePath = filePath + " " + filePath;
+					}
+				}
+			}		
+			System.out.println("filePath--->"+filePath);
+			if(StringUtils.isEmpty(filePath)) {
+				ClientAssert.isTrue(false, "please choose dwg files!");
+			}else {
+				ReadToXml.readToXml(filePath);
+				Container parent = getParent();
+				while (!(parent instanceof Window)) {
+					parent = parent.getParent();
+				}
+				EventQueue.invokeLater((Runnable) parent);
+			}
 		}
 
 		@Override
@@ -96,7 +127,7 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 			while (!(parent instanceof Window)) {
 				parent = parent.getParent();
 			}
-			Option confirm = new Option(Option.CONFIRM_BUTTON, null, (ActionListener) parent);
+			Option confirm = new Option(Option.CONFIRM_BUTTON, null, this);
 
 			add(new OptionPanel(Arrays.asList(confirm, Option.newCancelOption((Window) parent))));
 		}
@@ -155,5 +186,11 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 			table.setColumnWidth();
 			add(sp);
 		}
+	}
+
+	@Override
+	public void run() {
+		new LoginFrame().activate();
+		dispose();		
 	}
 }

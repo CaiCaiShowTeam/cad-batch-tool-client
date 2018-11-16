@@ -32,29 +32,28 @@ public class ReadToXml {
 		sb.append(PropertiesUtils.readProperty(XML));
 		sb.append("\"");
 		sb.append(" ");
-		sb.append("\"");
 		sb.append(filePath);
-		sb.append("\"");
 		sb.append(")");
 		sb.append("\n");
+		System.out.println("sb.toString()--->"+sb.toString());
 
 		return sb.toString();
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String filePath = "C:\\\\Users\\\\bc\\\\Desktop\\\\国祥AutoCAD模板-自制件A4.dwg";
+		//test
+		String filePath = "C:\\software\\Release20181103\\图纸\\中望\\CxxxM0000.dwg";
+		String filePath1 = "C:\\Users\\bc\\Desktop\\图纸\\图纸\\中望\\M142B3100.dwg" ;
+		filePath = "\"" +  filePath + "\" \"" + filePath1 +"\"";
 		readToXml(filePath);
 	}
 
 	public static void readToXml(String filePath) {
 		ComThread.InitSTA();
-		// connect CAD Tools that has opened.if it doesn't exist opened CAD,will return
-		// null.
+		// connect CAD Tools that has opened.if it doesn't exist opened CAD,will return null.
 		String application = PropertiesUtils.readProperty(APPLICATION);
 		ClientAssert.notNull(application, "application is null");
 		ActiveXComponent zwApp = ActiveXComponent.connectToActiveInstance(application);
-
 		// ZcadDocument
 		String activeDoc = PropertiesUtils.readProperty(ACTIVEDOC);
 		ClientAssert.notNull(activeDoc, "activeDoc is null");
