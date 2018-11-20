@@ -248,7 +248,10 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 		    publish (new PopProgress.PromptProgress (getResourceMap ().getString (PROMPT_0) + ( i + 1 ),0));
 		    for (Attachment attachment : attachments) {
 			File file = new File (attachment.getAbsolutePath ());
-			//build new filename: oldfilename + time
+			if (logger.isDebugEnabled ()) {
+			    logger.debug ("file exists is -> " + file.exists () + " attachment.getAbsolutePath () is -> " + attachment.getAbsolutePath ());
+			}
+			//build new filename: oldfilename + uuid
 			String newFileName = ClientUtils.buildNewFileName (file);
 			if (logger.isDebugEnabled ()) {
 			    logger.debug ("客户端文件路径 is -> " + attachment.getAbsolutePath () + " ftp到服务器端后新的文件名 is -> " + newFileName);
@@ -256,7 +259,12 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 			attachment.setName (newFileName);
 			boolean upload = FTPUtils.newInstance ().upload (file,newFileName);
 			if (logger.isDebugEnabled ()) {
-			    logger.debug ("上传客户端文件[" + attachment.getAbsolutePath () + "]到ftp服务器结果 is -> " + upload);
+			    logger.debug ("ftp上传结果 upload is -> " + upload);
+			}
+			if (upload) {
+			    publish (new PopProgress.PromptProgress ("上传客户端文件" + attachment.getAbsolutePath () + "到ftp服务器成功.",10));
+			} else {
+			    publish (new PopProgress.PromptProgress ("上传客户端文件" + attachment.getAbsolutePath () + "到ftp服务器失败.",20));
 			}
 		    }
 		}
@@ -265,9 +273,11 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    publish (new PopProgress.PromptProgress (getResourceMap ().getString (PROMPT_50),50));
 	    boolean successed = ClientUtils.checkin (documents);
 	    if (successed) {
+		publish (new PopProgress.PromptProgress ("检入成功.",80));
 		JOptionPane.showMessageDialog (null,getResourceMap ().getString (PROMPT_SUCCESSED),
 			getResourceMap ().getString (PROMPT_TITLE),JOptionPane.INFORMATION_MESSAGE);
 	    } else {
+		publish (new PopProgress.PromptProgress ("检入失败.",80));
 		JOptionPane.showMessageDialog (null,getResourceMap ().getString (PROMPT_FAILED),
 			getResourceMap ().getString (PROMPT_TITLE),JOptionPane.OK_OPTION);
 	    }
