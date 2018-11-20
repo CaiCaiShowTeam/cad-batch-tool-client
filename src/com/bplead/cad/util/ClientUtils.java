@@ -146,6 +146,12 @@ public class ClientUtils extends ClientInstanceUtils {
 	// document.setDocuments (docList);
 	// return document;
     }
+    
+    public static String validateComfirm(Documents documents) {
+	ClientAssert.notNull (documents,"documents is required");
+	return invoke (RemoteMethod.VALIDATECOMFIRM,new Class<?> [] { Documents.class },new Object [] { documents },
+		String.class);
+    }
 
     public static boolean checkin(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");

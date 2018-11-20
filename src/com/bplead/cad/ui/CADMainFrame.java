@@ -32,6 +32,7 @@ import priv.lee.cad.ui.AbstractFrame;
 import priv.lee.cad.util.ClientAssert;
 import priv.lee.cad.util.CollectionUtils;
 import priv.lee.cad.util.PropertiesUtils;
+import priv.lee.cad.util.StringUtils;
 import priv.lee.cad.util.XmlUtils;
 
 public class CADMainFrame extends AbstractFrame implements Callback {
@@ -159,9 +160,47 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	    // checkin before validate basic data
 	    ValidateUtils.validateCheckin (documents);
+	    // checkin before validate comfirm data client
+	    String checkComfirmClient = ValidateUtils.validateComfirm (documents);
+	    boolean isContinue = true;
+	    if (StringUtils.isEmpty (checkComfirmClient)) {
+		// checkin before validate comfirm data server
+		String checkComfirmServer = ClientUtils.validateComfirm (documents);
+		if (StringUtils.isEmpty (checkComfirmClient)) {
+		} else {
+		    int n = JOptionPane.showConfirmDialog (null,checkComfirmServer,"图纸代号校验",JOptionPane.YES_NO_OPTION);
+		    // 选择yes则继续检入,其他则不处理
+		    if (n == 0) {
+		    } else {
+			isContinue = false;
+		    }
+		}
+	    } else {
+		int n = JOptionPane.showConfirmDialog (null,checkComfirmClient,"图纸代号校验",JOptionPane.YES_NO_OPTION);
+		// 选择yes则继续检入,其他则不处理
+		if (n == 0) {
+		    // checkin before validate comfirm data server
+		    String checkComfirmServer = ClientUtils.validateComfirm (documents);
+		    if (StringUtils.isEmpty (checkComfirmClient)) {
+		    } else {
+			int n1 = JOptionPane.showConfirmDialog (null,checkComfirmServer,"图纸代号校验",
+				JOptionPane.YES_NO_OPTION);
+			// 选择yes则继续检入,其他则不处理
+			if (n1 == 0) {
+			} else {
+			    isContinue = false;
+			}
+		    }
+		} else {
+		    isContinue = false;
+		}
+	    }
+	    logger.info ("isContinue is -> " + isContinue);
+	    if (isContinue) {
+		CheckinWorker worker = new CheckinWorker (documents,callback);
+		worker.execute ();
+	    }
 
-	    CheckinWorker worker = new CheckinWorker (documents,callback);
-	    worker.execute ();
 	}
 
 	private void processorAttachments() {

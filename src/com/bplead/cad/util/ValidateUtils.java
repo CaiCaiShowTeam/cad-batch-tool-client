@@ -23,6 +23,26 @@ import priv.lee.cad.util.StringUtils;
 public class ValidateUtils {
 
     private static final Logger logger = Logger.getLogger (ValidateUtils.class);
+    
+    public static String validateComfirm (Documents documents) {
+	logger.info ("validateComfirm begin...");
+	List<Integer> checkRows = documents.getCheckRows ();
+	List<Document> documentL = documents.getDocuments ();
+	StringBuffer buf = new StringBuffer ();
+	for (int i = 0; i < documentL.size (); i++) {
+	    if (!checkRows.contains (i)) {
+		continue;
+	    }
+	    Document document = documentL.get (i);
+	    String checkConfirm = checkForConfirm(document);
+	    if (StringUtils.isEmpty (checkConfirm)) {
+	    } else {
+		buf.append (checkConfirm);
+	    }
+	}
+	logger.info ("validateComfirm end...");
+	return buf.toString ();
+    }
 
     public static void validateCheckin(Documents documents) {
 	ClientAssert.notNull (documents,"documents is required");
@@ -42,8 +62,6 @@ public class ValidateUtils {
 	    //TODO 校验必填项
 	    String checkPrompt = checkForPrompt (document);
 	    ClientAssert.notNull (checkPrompt,checkPrompt);
-	    String checkConfirm = checkForConfirm(document);
-	    ClientAssert.notNull (checkConfirm,checkConfirm);
 	    
 	    validateSuffix (attachments,buildPromptSuffix (document));
 
@@ -194,7 +212,7 @@ public class ValidateUtils {
 	// 如果是自制件
 	if (category == PartCategory.MAKE) {
 	    if (cindex.startsWith ("1.")) {
-		buf.append ("图纸代号为["+cindex+"]是以1.开始,可能是外购件,请修改图纸代号后检入或者直接检入.");
+		buf.append ("图纸代号["+cindex+"]开头为'1.',可能是外购件,请修改图纸代号后检入或者直接检入.");
 	    }
 	}
 	return buf.toString ();
