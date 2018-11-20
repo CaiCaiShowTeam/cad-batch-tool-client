@@ -12,6 +12,7 @@ import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
+import com.bplead.cad.bean.io.PartCategory;
 import com.bplead.cad.model.CustomPrompt;
 
 import priv.lee.cad.ui.RuntimeExceptionPanel;
@@ -38,7 +39,12 @@ public class ValidateUtils {
 	    validateStatus (document);
 	    List<Attachment> attachments = document.getObject ().getAttachments ();
 	    ClientAssert.notEmpty (attachments,buildPromptSuffix (document) + RuntimeExceptionPanel.DELIM +  CustomPrompt.ATTACHMENTS_NULL);
-
+	    //TODO 校验必填项
+	    String checkPrompt = checkForPrompt (document);
+	    ClientAssert.notNull (checkPrompt,checkPrompt);
+	    String checkConfirm = checkForConfirm(document);
+	    ClientAssert.notNull (checkConfirm,checkConfirm);
+	    
 	    validateSuffix (attachments,buildPromptSuffix (document));
 
 	    validateProduct (document.getContainer ().getProduct (),buildPromptSuffix (document));
@@ -130,5 +136,70 @@ public class ValidateUtils {
 		    promptSuffix + RuntimeExceptionPanel.DELIM + CustomPrompt.FILE_NOT_EXSIT);
 	}
     }
-
+    
+    public static PartCategory getPartCategory (Document document) throws Exception {
+	CadDocument cadDocument = (CadDocument) document.getObject ();
+	return getPartCategory (cadDocument);
+    }
+    
+    public static PartCategory getPartCategory (CadDocument cadDocument) throws Exception {
+	String material = cadDocument.getMaterial ();//标题栏中的外购件图号
+	String type = cadDocument.getSource ();//零部件类型
+	//当零部件类型为"外购件"且标题栏中外购件图号不为空时为外购件
+	if (StringUtils.equals (type,"外购件") && !StringUtils.isEmpty (material)) {
+	    return PartCategory.BUY;
+	} //零部件类型不存在或等于自制件且标题栏没有外购件图号为自制件
+	else if ((StringUtils.isEmpty (type) || StringUtils.contains (type,"自制件")) && StringUtils.isEmpty (material)) {
+	    return PartCategory.MAKE;  
+	} else {
+	    throw new Exception ("图纸[" + cadDocument.getNumber () + "]即不是外购件也不是自制件.");
+	}
+    }
+    
+    public static String checkForPrompt (Document document) {
+	StringBuffer buf = new StringBuffer ();
+	CadDocument cadDocument = (CadDocument) document.getObject ();
+	String cindex = cadDocument.getNumber ();
+	PartCategory category = null;
+	try {
+	    category = getPartCategory (cadDocument);
+	}
+	catch(Exception e) {
+	    e.printStackTrace();
+	}
+	// 如果是自制件
+	if (category == PartCategory.MAKE) {
+	    if (cindex.startsWith ("2.")) {
+		buf.append ("图纸代号为["+cindex+"]是以2.开始的自制件禁止检入系统");
+	    }
+	} else if (category == PartCategory.BUY) {
+	    if (!(cindex.startsWith ("2.") || cindex.startsWith ("1."))) {
+		buf.append ("图纸代号为["+cindex+"]不是以2.或者1.开始的我购件禁止检入系统");
+	    }
+	}
+	return buf.toString ();
+    }
+    
+    public static String checkForConfirm (Document document) {
+	StringBuffer buf = new StringBuffer ();
+	CadDocument cadDocument = (CadDocument) document.getObject ();
+	String cindex = cadDocument.getNumber ();
+	PartCategory category = null;
+	try {
+	    category = getPartCategory (cadDocument);
+	}
+	catch(Exception e) {
+	    e.printStackTrace();
+	}
+	// 如果是自制件
+	if (category == PartCategory.MAKE) {
+	    if (cindex.startsWith ("1.")) {
+		buf.append ("图纸代号为["+cindex+"]是以1.开始,可能是外购件,请修改图纸代号后检入或者直接检入.");
+	    }
+	}
+	return buf.toString ();
+    }
+    
+    
+    
 }
