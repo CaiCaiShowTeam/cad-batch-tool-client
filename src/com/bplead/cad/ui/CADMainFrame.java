@@ -166,7 +166,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 	    if (StringUtils.isEmpty (checkComfirmClient)) {
 		// checkin before validate comfirm data server
 		String checkComfirmServer = ClientUtils.validateComfirm (documents);
-		if (StringUtils.isEmpty (checkComfirmClient)) {
+		if (StringUtils.isEmpty (checkComfirmServer)) {
 		} else {
 		    int n = JOptionPane.showConfirmDialog (null,checkComfirmServer,"图纸代号校验",JOptionPane.YES_NO_OPTION);
 		    // 选择yes则继续检入,其他则不处理
@@ -181,7 +181,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 		if (n == 0) {
 		    // checkin before validate comfirm data server
 		    String checkComfirmServer = ClientUtils.validateComfirm (documents);
-		    if (StringUtils.isEmpty (checkComfirmClient)) {
+		    if (StringUtils.isEmpty (checkComfirmServer)) {
 		    } else {
 			int n1 = JOptionPane.showConfirmDialog (null,checkComfirmServer,"图纸代号校验",
 				JOptionPane.YES_NO_OPTION);
