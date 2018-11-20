@@ -278,6 +278,8 @@ public class ContainerPanel extends AbstractPanel {
 	    PromptTextField.PromptTextFieldDimension dimension = PromptTextField.newDimension (getPreferredSize (),
 		    LABEL_PROPORTION,TEXT_PROPORTION,HEIGHT_PROPORTION);
 	    text = PromptTextField.newInstance (setPrompt (),setText (object),dimension);
+	    //TODO 设置文本框不可编辑
+	    text.setEditable (false);
 	    add (text);
 
 	    // all
