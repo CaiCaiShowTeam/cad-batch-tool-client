@@ -130,6 +130,15 @@ public class ValidateUtils {
 	}
 	return sb.toString ();
     }
+    
+    public static String buildPromptSuffix(CadDocument cadDocument) {
+	if (cadDocument == null) {
+	    return "";
+	}
+	StringBuffer sb = new StringBuffer ();
+	sb.append (cadDocument.getNumber ()).append ("(").append (cadDocument.getName ()).append (")");
+	return sb.toString ();
+    }
 
     public static void validateStatus(Document document) {
 	CadStatus cadStatus = document.getCadStatus ();
@@ -155,12 +164,12 @@ public class ValidateUtils {
 	}
     }
     
-    public static PartCategory getPartCategory (Document document) throws Exception {
+    public static PartCategory getPartCategory (Document document) {
 	CadDocument cadDocument = (CadDocument) document.getObject ();
 	return getPartCategory (cadDocument);
     }
     
-    public static PartCategory getPartCategory (CadDocument cadDocument) throws Exception {
+    public static PartCategory getPartCategory (CadDocument cadDocument) {
 	String material = cadDocument.getMaterial ();//标题栏中的外购件图号
 	String type = cadDocument.getSource ();//零部件类型
 	//当零部件类型为"外购件"且标题栏中外购件图号不为空时为外购件
@@ -170,21 +179,16 @@ public class ValidateUtils {
 	else if ((StringUtils.isEmpty (type) || StringUtils.contains (type,"自制件")) && StringUtils.isEmpty (material)) {
 	    return PartCategory.MAKE;  
 	} else {
-	    throw new Exception ("图纸[" + cadDocument.getNumber () + "]即不是外购件也不是自制件.");
+	    ClientAssert.isTrue (false, buildPromptSuffix (cadDocument) + RuntimeExceptionPanel.DELIM + CustomPrompt.NOT_MAKE_AND_NOT_BUY);
 	}
+	return null;
     }
     
     public static String checkForPrompt (Document document) {
 	StringBuffer buf = new StringBuffer ();
 	CadDocument cadDocument = (CadDocument) document.getObject ();
 	String cindex = cadDocument.getNumber ();
-	PartCategory category = null;
-	try {
-	    category = getPartCategory (cadDocument);
-	}
-	catch(Exception e) {
-	    e.printStackTrace();
-	}
+	PartCategory category = getPartCategory (cadDocument);
 	// 如果是自制件
 	if (category == PartCategory.MAKE) {
 	    if (cindex.startsWith ("2.")) {
@@ -202,13 +206,7 @@ public class ValidateUtils {
 	StringBuffer buf = new StringBuffer ();
 	CadDocument cadDocument = (CadDocument) document.getObject ();
 	String cindex = cadDocument.getNumber ();
-	PartCategory category = null;
-	try {
-	    category = getPartCategory (cadDocument);
-	}
-	catch(Exception e) {
-	    e.printStackTrace();
-	}
+	PartCategory category = getPartCategory (cadDocument);
 	// 如果是自制件
 	if (category == PartCategory.MAKE) {
 	    if (cindex.startsWith ("1.")) {

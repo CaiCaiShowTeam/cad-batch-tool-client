@@ -63,4 +63,6 @@ public class CustomPrompt extends StandardPrompt {
 	public static final String NOT_CHECKOUT = "notCheckout";
 	
 	public static final String NO_PERSISTENCE = "noPersistence";
+	
+	public static final String NOT_MAKE_AND_NOT_BUY = "notMakeAndNotBuy";
 }
