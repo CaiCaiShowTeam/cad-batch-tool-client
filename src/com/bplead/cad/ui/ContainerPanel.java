@@ -58,7 +58,7 @@ public class ContainerPanel extends AbstractPanel {
 
     @Override
     public double getVerticalProportion() {
-	return 0.15d;
+	return 0.3d;
     }
 
     @Override
@@ -231,11 +231,11 @@ public class ContainerPanel extends AbstractPanel {
 	private static final long serialVersionUID = -5690721799689305895L;
 	private final double BUTTON_PROPORTION = 0.5d;
 	private final double HEIGHT_PROPORTION = 0.47d;
-	private final double LABEL_PROPORTION = 0.075d;
+	private final double LABEL_PROPORTION = 0.1d;
 	private T object;
 	public PromptTextField text;
-	private final double TEXT_PROPORTION = 0.45d;
-	private final double TXT_BTN_PROPOTION = 0.12d;
+	private final double TEXT_PROPORTION = 0.3d;
+	private final double TXT_BTN_PROPOTION = 0.15d;
 
 	public SimpleButtonSetPanel(T object) {
 	    this.object = object;

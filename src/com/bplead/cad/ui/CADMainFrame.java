@@ -65,7 +65,7 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
     @Override
     public double getHorizontalProportion() {
-	return 0.6d;
+	return 0.9d;
     }
 
     private File getRepository() {

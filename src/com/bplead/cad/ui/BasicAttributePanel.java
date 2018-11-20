@@ -48,9 +48,9 @@ public class BasicAttributePanel extends AbstractPanel {
     private final String EMPTY_PDMLINKPRODUCT = "pdm.empty.prompt";
     private final String FOLDER_PROMPT = "folder.prompt";
     private final String FOLDER_SEARCH_TEXT = "folder.search.text";
-    private final double HEIGHT_PROPORTION = 0.1d;
+    private final double HEIGHT_PROPORTION = 0.15d;
     private final double HGAP_PROPORTION = 0.02d;
-    private double labelProportion = 0.1d;
+    private double labelProportion = 0.15d;
     private final Logger logger = Logger.getLogger (BasicAttributePanel.class);
     private final String NUMBER_PROMPT = "number.prompt";
     public NumberPanel numberPanel;
@@ -60,7 +60,7 @@ public class BasicAttributePanel extends AbstractPanel {
     public PDMLinkProductPanel pdmlinkProductPanel;
     private Serializable serializable;// Document
     public SubFolderPanel subFolderPanel;
-    private double textProportion = 0.3d;
+    private double textProportion = 0.25d;
     private final String TITLE = "title";
     private final double VGAP_PROPORTION = 0.02d;
 
@@ -346,7 +346,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	private final double LABEL_PROPORTION = 0.2d;
 	private T object;
 	public PromptTextField text;
-	private final double TEXT_PROPORTION = 0.65d;
+	private final double TEXT_PROPORTION = 0.6d;
 
 	public SimpleButtonSetPanel(T object) {
 	    this.object = object;
@@ -365,7 +365,7 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	@Override
 	public double getVerticalProportion() {
-	    return 0.1d;
+	    return 0.15d;
 	}
 
 	@Override

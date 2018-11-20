@@ -82,7 +82,7 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 
     @Override
     public double getVerticalProportion() {
-	return 0.7d;
+	return 0.6d;
     }
 
     public Object [] [] buildTableData() throws Exception {

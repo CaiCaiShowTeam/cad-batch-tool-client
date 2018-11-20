@@ -38,7 +38,7 @@ public class DetailTextAreaPanel extends AbstractPanel {
 
     @Override
     public double getVerticalProportion() {
-	return 0.33d;
+	return 0.28d;
     }
 
     @Override
