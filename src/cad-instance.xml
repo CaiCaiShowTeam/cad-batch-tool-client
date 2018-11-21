@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cad>
+  <simpleDoc>
+    <number>C0M0000</number>
+    <name>布线图</name>
+    <materialModel>QBT-T702-16</materialModel>
+    <materialNum></materialNum>
+    <partSize></partSize>
+    <unitModel>HQ10AL</unitModel>
+    <weight>11.00</weight>
+    <proportion>1:8</proportion>
+    <size>A3</size>
+    <pageIndex>1</pageIndex>
+    <pageSize>1</pageSize>
+    <keyIdentity>否</keyIdentity>
+    <type>自制件</type>
+    <Detail>
+      <sn>1</sn>
+      <number>C0M0001</number>
+      <name>布线图</name>
+      <quantity>5</quantity>
+      <materialModel>GB93-87 8 SUS304</materialModel>
+      <sigletonWeight></sigletonWeight>
+      <totalWeight></totalWeight>
+      <desciption>未示出</desciption>
+    </Detail>
+    <attatchment>
+      <absolutePath>C:\Users\zjw\Desktop\demo\QBTL035H01-A.dwg</absolutePath>
+    </attatchment>
+  </simpleDoc>
+  <simpleDoc>
+    <number>C0M0001</number>
+    <name>布线图</name>
+    <materialModel>GB93-87 8 SUS304</materialModel>
+    <materialNum></materialNum>
+    <partSize></partSize>
+    <unitModel>HQ10AL</unitModel>
+    <weight>10.00</weight>
+    <proportion>1:8</proportion>
+    <size>A3</size>
+    <pageIndex>1</pageIndex>
+    <pageSize>1</pageSize>
+    <keyIdentity>否</keyIdentity>
+    <type>自制件</type>
+    <attatchment>
+      <absolutePath>C:\Users\zjw\Desktop\demo\QBTL034H01-A.dwg</absolutePath>
+    </attatchment>
+  </simpleDoc>
+</cad>
