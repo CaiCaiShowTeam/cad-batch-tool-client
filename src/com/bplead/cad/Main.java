@@ -3,6 +3,7 @@ package com.bplead.cad;
 import java.awt.EventQueue;
 
 import com.bplead.cad.ui.CADMainFrame;
+import com.bplead.cad.ui.ChooseDrawingDialog;
 import com.bplead.cad.util.ClientUtils;
 
 import priv.lee.cad.util.ClientAssert;
@@ -15,7 +16,16 @@ public class Main {
 	ClientUtils.args.setType (args[0]);
 	EventQueue.invokeLater (new Runnable () {
 	    public void run() {
-		new CADMainFrame ().activate ();
+//	    	new LoginFrame().activate();
+//		new CADMainFrame ().activate ();
+//	    new SearchPDMLinkProductDialog(new CADMainFrame ()).activate();
+	    new ChooseDrawingDialog(new CADMainFrame ()).activate();
+	    
+//	    new BomDetailDialog(new CADMainFrame ()).activate();
+
+//		new SearchForDownloadDialog(new CADMainFrame ()).activate();
+//	    new FolderChooseDialog(new CADMainFrame (),new SimplePdmLinkProduct()).activate();
+
 	    }
 	});
     }

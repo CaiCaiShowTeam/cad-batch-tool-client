@@ -13,7 +13,10 @@ import javax.swing.table.TableColumn;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.CadStatus;
+import com.bplead.cad.ui.BomDetailDialog;
+import com.bplead.cad.ui.CADMainFrame;
 
 public class MutiTable extends JTable implements MouseListener {
 
@@ -59,10 +62,13 @@ public class MutiTable extends JTable implements MouseListener {
 	    if (cadStatus == CadStatus.NOT_EXIST) {
 		JOptionPane.showMessageDialog (null,"该行对象尚未在系统中创建,不能执行该BOM比较操作.","提示",JOptionPane.INFORMATION_MESSAGE);
 	    } else {
-		JOptionPane.showMessageDialog (null,"open compare window " + number,"success",JOptionPane.INFORMATION_MESSAGE);
+	    	if (RemoteMethod.VERBOSE) {
+	    		JOptionPane.showMessageDialog (null,"open compare window " + number,"success",JOptionPane.INFORMATION_MESSAGE);
+	    	}
+	    	//open compare
+	    	new BomDetailDialog(new CADMainFrame ()).activate();
 	    }
 	    
-//	    new PdmLinkProductChooseDialog (number).activate ();
 	}
 	if (this.columnAtPoint (e.getPoint ()) != this.checkHeaderColumn) {
 	    return;

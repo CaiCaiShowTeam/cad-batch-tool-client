@@ -202,7 +202,7 @@ public class SearchResultTable extends JTable implements ResourceMapper, MouseLi
 
 			try {
 				if (column == 1) {
-					model.setValueAt(String.valueOf(row++), row, column);
+					model.setValueAt(String.valueOf(row + 1), row, column);
 				} else {
 					Object content = getCellContent(documents.get(row), getCellContentName(column),
 							getCellContentType(column));
