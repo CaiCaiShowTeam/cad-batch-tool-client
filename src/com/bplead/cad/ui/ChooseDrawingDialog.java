@@ -8,20 +8,14 @@ import java.awt.LayoutManager;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.Arrays;
-
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
-
 import org.apache.log4j.Logger;
-import org.apache.poi.poifs.property.Parent;
-
 import com.bplead.cad.util.ReadToXml;
-
 import priv.lee.cad.model.Callback;
 import priv.lee.cad.ui.AbstractDialog;
 import priv.lee.cad.ui.AbstractPanel;
@@ -32,7 +26,8 @@ import priv.lee.cad.util.ClientAssert;
 import priv.lee.cad.util.StringUtils;
 
 public class ChooseDrawingDialog extends AbstractDialog implements ActionListener, Runnable {
-	private final String BUTTON_ICON = "folder.search.icon";
+	private final String DWG_ADD_ICON = "dwg.add.icon";
+	private final String DWG_REMOVE_ICON = "dwg.remove.icon";
 
 	private static LayoutManager rightLayout = new FlowLayout(FlowLayout.RIGHT);
 	private static LayoutManager leftLayout = new FlowLayout(FlowLayout.LEFT);
@@ -86,19 +81,17 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 			DefaultTableModel tableModel = (DefaultTableModel) searchResultPanel.table.getModel();
 			int rowCount = tableModel.getRowCount();
 			String filePath = "";
-			for (int i =0; i <rowCount ; i++) {
-				Boolean isSelected = (Boolean) searchResultPanel.table.getValueAt(i, 0);
-				if (isSelected) {
-					if(StringUtils.isEmpty(filePath)) {
-						filePath = "\"" +  searchResultPanel.table.getValueAt(i, 3) + "\"";
-					}else {
-						filePath = filePath + " " + filePath;
-					}
+			for (int i = 0; i < rowCount; i++) {
+				String selectPath = "\"" + searchResultPanel.table.getValueAt(i, 3) + "\"";
+				if (StringUtils.isEmpty(filePath)) {
+					filePath = selectPath;
+				} else {
+					filePath = filePath + selectPath;
 				}
-			}		
-			if(StringUtils.isEmpty(filePath)) {
-				ClientAssert.isTrue(false, "please choose dwg files!");
-			}else {
+			}
+			if (StringUtils.isEmpty(filePath)) {
+				ClientAssert.isTrue(false, "please add DWG files!");
+			} else {
 				ReadToXml.readToXml(filePath);
 				Container parent = getParent();
 				while (!(parent instanceof Window)) {
@@ -157,7 +150,7 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 					getResourceMap().getString(TITLE), TitledBorder.DEFAULT_JUSTIFICATION,
 					TitledBorder.DEFAULT_POSITION, toolkit.getFont()));
 
-			Option addOption = new Option(null, BUTTON_ICON, new ActionListener() {
+			Option addOption = new Option(null, DWG_ADD_ICON, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					new AddLocalFileChooser(JFileChooser.FILES_ONLY, table);
@@ -165,7 +158,7 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 			});
 			addOption.setContentAreaFilled(false);
 			addOption.setBorder(null);
-			Option removeOption = new Option(null, BUTTON_ICON, new ActionListener() {
+			Option removeOption = new Option(null, DWG_REMOVE_ICON, new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					new RemoveLocalFileChooser(table);
@@ -190,6 +183,6 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 	@Override
 	public void run() {
 		new LoginFrame().activate();
-		dispose();		
+		dispose();
 	}
 }
