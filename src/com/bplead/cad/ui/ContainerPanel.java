@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
+import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.util.ClientUtils;
 
 import priv.lee.cad.model.Callback;
@@ -127,7 +128,9 @@ public class ContainerPanel extends AbstractPanel {
 	}
 	
 	public void setAllForContainer (String containerName) {
-	    JOptionPane.showMessageDialog (null,"您点击的是'设置全部'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    if (RemoteMethod.VERBOSE) {
+		JOptionPane.showMessageDialog (null,"您点击的是'设置全部'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	    //refresh CadTablePanel data
 	    WestPanel westPanel = ClientUtils.getParentContainer (this,WestPanel.class);
 	    String result = westPanel.cadTablePanel.refreshContainerData (containerName,"all");
@@ -144,7 +147,9 @@ public class ContainerPanel extends AbstractPanel {
 	}
 	
 	public void setCheckForContainer (String containerName) {
-	    JOptionPane.showMessageDialog (null,"您点击的是'设置选中'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    if (RemoteMethod.VERBOSE) {
+		JOptionPane.showMessageDialog (null,"您点击的是'设置选中'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	    //refresh CadTablePanel data
 	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
 	    String result = westPanel.cadTablePanel.refreshContainerData (containerName,"check");
@@ -161,7 +166,9 @@ public class ContainerPanel extends AbstractPanel {
 	}
 	
 	public void setClearForContainer (String containerName) {
-	    JOptionPane.showMessageDialog (null,"您点击的是'清空全部'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    if (RemoteMethod.VERBOSE) {
+		JOptionPane.showMessageDialog (null,"您点击的是'清空全部'按钮 " + containerName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	    //refresh CadTablePanel data
 	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
 	    String result = westPanel.cadTablePanel.refreshContainerData (containerName,"clear");
@@ -278,8 +285,10 @@ public class ContainerPanel extends AbstractPanel {
 	    PromptTextField.PromptTextFieldDimension dimension = PromptTextField.newDimension (getPreferredSize (),
 		    LABEL_PROPORTION,TEXT_PROPORTION,HEIGHT_PROPORTION);
 	    text = PromptTextField.newInstance (setPrompt (),setText (object),dimension);
-	    //TODO 设置文本框不可编辑
-	    text.setEditable (false);
+	    //设置文本框不可编辑
+	    if (RemoteMethod.VERBOSE) {
+		text.setEditable (false);
+	    }
 	    add (text);
 
 	    // all
@@ -332,7 +341,7 @@ public class ContainerPanel extends AbstractPanel {
 	    String folderName = this.text.getText ().getText ();
 	    boolean flag = this.getFolder () != null;
 	    if (flag) {
-		folderName = this.getFolder ().getName ();
+		folderName = this.getFolder ().getFolderPath ();
 	    }
 	    if (logger.isDebugEnabled ()) {
 		logger.debug ("folderName is -> " + folderName);
@@ -362,7 +371,9 @@ public class ContainerPanel extends AbstractPanel {
 	}
 	
 	public void setAllForFolder (String folderName) {
-	    JOptionPane.showMessageDialog (null,"您点击的是'设置全部'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    if (RemoteMethod.VERBOSE) {
+		JOptionPane.showMessageDialog (null,"您点击的是'设置全部'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	    //refresh CadTablePanel data
 	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
 	    String result = westPanel.cadTablePanel.refreshFolderData (folderName,"all");
@@ -379,7 +390,9 @@ public class ContainerPanel extends AbstractPanel {
 	}
 	
 	public void setCheckForFolder (String folderName) {
-	    JOptionPane.showMessageDialog (null,"您点击的是'设置选中'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    if (RemoteMethod.VERBOSE) {
+		JOptionPane.showMessageDialog (null,"您点击的是'设置选中'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	    //refresh CadTablePanel data
 	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
 	    String result = westPanel.cadTablePanel.refreshFolderData (folderName,"check");
@@ -396,7 +409,9 @@ public class ContainerPanel extends AbstractPanel {
 	}
 	
 	public void setClearForFolder (String folderName) {
-	    JOptionPane.showMessageDialog (null,"您点击的是'清空全部'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    if (RemoteMethod.VERBOSE) {
+		JOptionPane.showMessageDialog (null,"您点击的是'清空全部'按钮 " + folderName,"提示",JOptionPane.INFORMATION_MESSAGE);
+	    }
 	    //refresh CadTablePanel data
 	    WestPanel westPanel = (WestPanel) this.getParent ().getParent ();
 	    String result = westPanel.cadTablePanel.refreshFolderData (folderName,"clear");
@@ -415,11 +430,21 @@ public class ContainerPanel extends AbstractPanel {
 	@Override
 	public void call(Object object) {
 	    ClientAssert.notNull (object,"Callback object is required");
-
 	    Object [] nodes = (Object []) object;
+	    String forderPath = "/";
+	    for (Object obj : nodes) {
+		FolderTree.FolderNode node = null;
+		if (obj instanceof FolderTree.FolderNode) {
+		    node = (FolderTree.FolderNode) obj;
+		    forderPath = forderPath + node.getFolder ().getName () + "/";
+		}
+	    }
 	    folder = ( (FolderTree.FolderNode) nodes[nodes.length - 1] ).getFolder ();
-
-	    refresh (folder.getName ());
+	    folder.setFolderPath (forderPath);
+	    if (logger.isDebugEnabled ()) {
+		logger.debug ("forderPath is -> " + forderPath);
+	    }
+	    refresh (forderPath);
 	}
 
 	public SimpleFolder getFolder() {

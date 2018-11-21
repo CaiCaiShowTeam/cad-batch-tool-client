@@ -265,7 +265,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	public void actionPerformed(ActionEvent e) {
 	    CadStatus cadStatus = document.getCadStatus ();
 	    if (cadStatus == CadStatus.NOT_EXIST) {
-		new PdmLinkProductChooseDialog (this).activate ();
+		new SearchPDMLinkProductDialog (this).activate ();
 	    } else {
 		JOptionPane.showMessageDialog (null,"对象已在系统中存在,不能执行更改产品容器操作.","提示",JOptionPane.INFORMATION_MESSAGE);
 	    }
@@ -439,15 +439,23 @@ public class BasicAttributePanel extends AbstractPanel {
 	    ClientAssert.notNull (object,"Callback object is required");
 
 	    Object [] nodes = (Object []) object;
+	    String forderPath = "/";
+	    for (Object obj : nodes) {
+		FolderTree.FolderNode node = null;
+		if (obj instanceof FolderTree.FolderNode) {
+		    node = (FolderTree.FolderNode) obj;
+		    forderPath = forderPath + node.getFolder ().getName () + "/";
+		}
+	    }
 	    folder = ( (FolderTree.FolderNode) nodes[nodes.length - 1] ).getFolder ();
-
-	    refresh (folder.getName ());
+	    folder.setFolderPath (forderPath);
+	    refresh (forderPath);
 
 	    // refresh cadTablePanel
 	    boolean enable = ClientUtils.enableObject (document);
 	    if (enable) {
 		String number = ( (CadDocument) document.getObject () ).getNumber ();
-		String folderName = folder.getName ();
+		String folderName = folder.getFolderPath ();
 		if (logger.isDebugEnabled ()) {
 		    logger.debug ("refresh cadTablePanel number is -> " + number + " folderName is -> " + folderName);
 		}
