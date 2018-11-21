@@ -35,7 +35,6 @@ public class ReadToXml {
 		sb.append(filePath);
 		sb.append(")");
 		sb.append("\n");
-		System.out.println("sb.toString()--->"+sb.toString());
 
 		return sb.toString();
 	}

@@ -96,7 +96,6 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 					}
 				}
 			}		
-			System.out.println("filePath--->"+filePath);
 			if(StringUtils.isEmpty(filePath)) {
 				ClientAssert.isTrue(false, "please choose dwg files!");
 			}else {

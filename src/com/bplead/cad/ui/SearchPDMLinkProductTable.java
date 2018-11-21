@@ -7,18 +7,15 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
 import javax.swing.JRadioButton;
 import javax.swing.JTable;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-
-import com.bplead.cad.bean.PDMInfo;
+import com.bplead.cad.bean.SimplePdmLinkProduct;
 import com.bplead.cad.ui.SearchPDMLinkProductDialog.SearchConditionsPanel;
 import com.bplead.cad.util.ClientUtils;
-
 import priv.lee.cad.model.ResourceMap;
 import priv.lee.cad.model.ResourceMapper;
 import priv.lee.cad.model.impl.DefaultResourceMap;
@@ -51,12 +48,12 @@ public class SearchPDMLinkProductTable extends JTable implements ResourceMapper,
 		protected String doInBackground() throws Exception {
 			try {
 				DefaultTableModel model = (DefaultTableModel) getModel();
-				List<PDMInfo> infos = ClientUtils.getPDMInfos();
+				infos = ClientUtils.getPDMInfos();
 				if (infos == null || infos.isEmpty()) {
 					return null;
 				}
 				for (int i = 0; i < infos.size(); i++) {
-					PDMInfo info = infos.get(i);
+					SimplePdmLinkProduct info = infos.get(i);
 					String name = info.getName();
 					String modifyTime = info.getModifyTime();
 					String modifier = info.getModifier();
@@ -82,7 +79,7 @@ public class SearchPDMLinkProductTable extends JTable implements ResourceMapper,
 	private final String COL_HEADER_SUFFIX = "].header";
 	private final String COL_WIDTH_SUFFIX = "].proportion.width";
 	private final String COLUMN_TOTAL = "column.total";
-	private List<PDMInfo> infos;
+	private List<SimplePdmLinkProduct> infos;
 	private final String PREFIX_COL_HEADER = "column[";
 	private ResourceMap resourceMap;
 	private SearchConditionsPanel searchConditionPanel;
@@ -123,16 +120,15 @@ public class SearchPDMLinkProductTable extends JTable implements ResourceMapper,
 		return resourceMap;
 	}
 
-	public List<PDMInfo> getSelectedDocuments() {
-		List<PDMInfo> selectedInfos = new ArrayList<PDMInfo>();
+	public SimplePdmLinkProduct getSelectedProduct() {
 		int rows = getModel().getRowCount();
 		for (int i = 0; i < rows; i++) {
 			JRadioButton selected = (JRadioButton) getValueAt(i, 0);
 			if (selected.isSelected()) {
-				selectedInfos.add(infos.get(i));
+				return infos.get(i);
 			}
 		}
-		return selectedInfos;
+		return null;
 	}
 
 	public void initHeader() {

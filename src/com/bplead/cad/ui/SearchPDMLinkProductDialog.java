@@ -10,7 +10,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -22,7 +21,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
-import com.bplead.cad.bean.PDMInfo;
+import com.bplead.cad.bean.SimplePdmLinkProduct;
 
 import priv.lee.cad.model.Callback;
 import priv.lee.cad.ui.AbstractDialog;
@@ -80,7 +79,7 @@ public class SearchPDMLinkProductDialog extends AbstractDialog implements Action
 
 	@Override
 	public Object setCallbackObject() {
-		return null;
+		return searchResultPanel.table.getSelectedProduct();
 	}
 
 	class ConfirmPanel extends AbstractPanel implements ActionListener {
@@ -220,8 +219,8 @@ public class SearchPDMLinkProductDialog extends AbstractDialog implements Action
 			add(sp);
 		}
 
-		public List<PDMInfo> getPDMInfos() {
-			return table.getSelectedDocuments();
+		public SimplePdmLinkProduct getPDMInfos() {
+			return table.getSelectedProduct();
 		}
 
 	}

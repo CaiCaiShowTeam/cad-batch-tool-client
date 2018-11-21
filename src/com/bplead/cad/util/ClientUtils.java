@@ -14,12 +14,9 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 import org.apache.log4j.Logger;
-
 import com.bplead.cad.bean.BOMInfo;
 import com.bplead.cad.bean.DataContent;
-import com.bplead.cad.bean.PDMInfo;
 import com.bplead.cad.bean.SimpleDocument;
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
@@ -230,7 +227,7 @@ public class ClientUtils extends ClientInstanceUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static List<PDMInfo> getPDMInfos() {
+    public static List<SimplePdmLinkProduct> getPDMInfos() {
 	return invoke (RemoteMethod.GETPDMINFOS,new Class<?> [] {},new Object [] {},List.class);
     }
 

@@ -122,7 +122,7 @@ public class ContainerPanel extends AbstractPanel {
 		    JOptionPane.showMessageDialog (null,"尚未选择产品容器","提示",JOptionPane.INFORMATION_MESSAGE);
 		}
 	    } else {
-		new PdmLinkProductChooseDialog (this).activate ();
+		new SearchPDMLinkProductDialog (this).activate ();
 	    }
 	}
 	
