@@ -69,8 +69,6 @@ public class ContainerPanel extends AbstractPanel {
 		getResourceMap ().getString (TITLE),TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,
 		toolkit.getFont ()));
 
-	// setBorder (BorderFactory.createLineBorder (Color.BLUE));
-
 	logger.info ("initialize " + PDMLinkProductPanel.class + "...");
 	pdmlinkProductPanel = new PDMLinkProductPanel (null);
 	add (pdmlinkProductPanel);
@@ -280,7 +278,9 @@ public class ContainerPanel extends AbstractPanel {
 	    // TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,toolkit.getFont
 	    // ()));
 
-	    setBorder (BorderFactory.createLineBorder (Color.GREEN));
+	    if (RemoteMethod.VERBOSE) {
+		setBorder (BorderFactory.createLineBorder (Color.GREEN));
+	    }
 
 	    PromptTextField.PromptTextFieldDimension dimension = PromptTextField.newDimension (getPreferredSize (),
 		    LABEL_PROPORTION,TEXT_PROPORTION,HEIGHT_PROPORTION);

@@ -23,6 +23,7 @@ import com.bplead.cad.annotation.IbaField;
 import com.bplead.cad.bean.SimpleDocument;
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
+import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Document;
@@ -50,7 +51,7 @@ public class BasicAttributePanel extends AbstractPanel {
     private final String FOLDER_SEARCH_TEXT = "folder.search.text";
     private final double HEIGHT_PROPORTION = 0.15d;
     private final double HGAP_PROPORTION = 0.02d;
-    private double labelProportion = 0.15d;
+    private double labelProportion = 0.1d;
     private final Logger logger = Logger.getLogger (BasicAttributePanel.class);
     private final String NUMBER_PROMPT = "number.prompt";
     public NumberPanel numberPanel;
@@ -60,7 +61,7 @@ public class BasicAttributePanel extends AbstractPanel {
     public PDMLinkProductPanel pdmlinkProductPanel;
     private Serializable serializable;// Document
     public SubFolderPanel subFolderPanel;
-    private double textProportion = 0.25d;
+    private double textProportion = 0.28d;
     private final String TITLE = "title";
     private final double VGAP_PROPORTION = 0.02d;
 
@@ -149,8 +150,10 @@ public class BasicAttributePanel extends AbstractPanel {
 
 	logger.info ("convert to PromptTextField...");
 	List<PromptTextField> texts = conver2Texts ();
-
-	setBorder (BorderFactory.createLineBorder (Color.ORANGE));
+	
+	if (RemoteMethod.VERBOSE) {
+	    setBorder (BorderFactory.createLineBorder (Color.ORANGE));
+	}
 
 	// ~ performance hGap and vGap
 	int hGap = ( (Double) ( getPreferredSize ().width * HGAP_PROPORTION ) ).intValue ();

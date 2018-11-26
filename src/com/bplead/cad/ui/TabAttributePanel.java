@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.Document;
 import com.bplead.cad.bean.io.Documents;
@@ -82,8 +83,9 @@ public class TabAttributePanel extends JTabbedPane implements ResourceMapper, Ti
 
     @Override
     public void initialize() {
-
-	setBorder (BorderFactory.createLineBorder (Color.RED));
+	if (RemoteMethod.VERBOSE) {
+	    setBorder (BorderFactory.createLineBorder (Color.RED));
+	}
 
 	List<Document> documentL = documents.getDocuments ();
 	if (documentL == null || documentL.isEmpty ()) {

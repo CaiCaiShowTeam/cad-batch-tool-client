@@ -10,6 +10,7 @@ import javax.swing.BorderFactory;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.Documents;
 
 import priv.lee.cad.model.MiddleAlignGap;
@@ -44,8 +45,9 @@ public class WestPanel extends AbstractPanel {
     @Override
     public void initialize() {
 	setLayout (new FlowLayout (FlowLayout.CENTER,gap.hGap,gap.vGap));
-
-	setBorder (BorderFactory.createLineBorder (Color.BLACK));
+	if (RemoteMethod.VERBOSE) {
+	    setBorder (BorderFactory.createLineBorder (Color.BLACK));
+	}
 
 	logger.info ("initialize " + getClass () + " container attribute panel...");
 	containerPanel = new ContainerPanel ();

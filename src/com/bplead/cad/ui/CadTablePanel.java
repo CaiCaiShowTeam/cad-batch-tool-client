@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import com.bplead.cad.bean.SimpleFolder;
 import com.bplead.cad.bean.SimplePdmLinkProduct;
+import com.bplead.cad.bean.constant.RemoteMethod;
 import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadStatus;
 import com.bplead.cad.bean.io.Container;
@@ -560,7 +561,9 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	mutiTable.setPreferredSize (new Dimension (getPreferredSize ().width,
 		( (Double) ( getPreferredSize ().height * TABLE_HEIGHT_PROPORTION ) ).intValue ()));
 	// set jtable border
-	mutiTable.setBorder (BorderFactory.createLineBorder (Color.CYAN));
+	if (RemoteMethod.VERBOSE) {
+	    mutiTable.setBorder (BorderFactory.createLineBorder (Color.CYAN));
+	}
 
 	// new jscrollpane and set jtable into
 	JScrollPane scrollPane = new JScrollPane (mutiTable);
@@ -572,7 +575,9 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 		new Dimension (( (Double) ( getPreferredSize ().width * SCROLL_WIDTH_PROPORTION ) ).intValue (),
 			( (Double) ( getPreferredSize ().height * SCROLL_HEIGHT_PROPORTION ) ).intValue ()));
 	// set jscrollpane border
-	scrollPane.setBorder (BorderFactory.createLineBorder (Color.ORANGE));
+	if (RemoteMethod.VERBOSE) {
+	    scrollPane.setBorder (BorderFactory.createLineBorder (Color.ORANGE));
+	}
 
 	// add jscrollpane to panel
 	add (scrollPane);

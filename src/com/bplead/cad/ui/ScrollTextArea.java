@@ -16,6 +16,8 @@ import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.bean.constant.RemoteMethod;
+
 import priv.lee.cad.model.MiddleAlignGap;
 
 /**
@@ -90,7 +92,9 @@ public class ScrollTextArea extends JComponent {
 	textArea.setLineWrap (true);
 	textArea.setCaretPosition (textArea.getText ().length ());
 	//set textarea border
-	textArea.setBorder (BorderFactory.createLineBorder (Color.BLUE));
+	if (RemoteMethod.VERBOSE) {
+	    textArea.setBorder (BorderFactory.createLineBorder (Color.BLUE));
+	}
 
 	scrollPane.setViewportView (textArea);
 	scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -98,7 +102,9 @@ public class ScrollTextArea extends JComponent {
 	scrollPane.setWheelScrollingEnabled (true);
 	scrollPane.setPreferredSize (new Dimension (dimension.textWidth,((Double)(dimension.height * SCROLL_HEIGHT_PROPORTION)).intValue ()));
 	//set scrollPane border
-	scrollPane.setBorder (BorderFactory.createLineBorder (Color.GREEN));
+	if (RemoteMethod.VERBOSE) {
+	    scrollPane.setBorder (BorderFactory.createLineBorder (Color.GREEN));
+	}
 
 	add (scrollPane);
 
