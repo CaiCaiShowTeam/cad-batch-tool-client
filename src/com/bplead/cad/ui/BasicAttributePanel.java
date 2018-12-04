@@ -51,7 +51,7 @@ public class BasicAttributePanel extends AbstractPanel {
     private final String FOLDER_SEARCH_TEXT = "folder.search.text";
     private final double HEIGHT_PROPORTION = 0.15d;
     private final double HGAP_PROPORTION = 0.02d;
-    private double labelProportion = 0.1d;
+    private double labelProportion = 0.13d;
     private final Logger logger = Logger.getLogger (BasicAttributePanel.class);
     private final String NUMBER_PROMPT = "number.prompt";
     public NumberPanel numberPanel;
@@ -346,7 +346,7 @@ public class BasicAttributePanel extends AbstractPanel {
 	private static final long serialVersionUID = -5690721799689305895L;
 	private final double BUTTON_PROPORTION = 1d;
 	private final double HEIGHT_PROPORTION = 0.9d;
-	private final double LABEL_PROPORTION = 0.2d;
+	private final double LABEL_PROPORTION = 0.23d;
 	private T object;
 	public PromptTextField text;
 	private final double TEXT_PROPORTION = 0.6d;
