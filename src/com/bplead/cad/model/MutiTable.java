@@ -14,9 +14,13 @@ import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 
 import com.bplead.cad.bean.constant.RemoteMethod;
+import com.bplead.cad.bean.io.CadDocument;
 import com.bplead.cad.bean.io.CadStatus;
+import com.bplead.cad.bean.io.Document;
+import com.bplead.cad.bean.io.Documents;
 import com.bplead.cad.ui.BomDetailDialog;
-import com.bplead.cad.ui.CADMainFrame;
+
+import priv.lee.cad.util.StringUtils;
 
 public class MutiTable extends JTable implements MouseListener {
 
@@ -41,6 +45,12 @@ public class MutiTable extends JTable implements MouseListener {
     private boolean oldEnable = false;
     
     private int DEFAULT_BUTTON_COLUMN = 3;
+    
+    private Documents documents;
+    
+    public MutiTable (Documents documents) {
+    	this.documents = documents;
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -64,9 +74,24 @@ public class MutiTable extends JTable implements MouseListener {
 	    } else {
 	    	if (RemoteMethod.VERBOSE) {
 	    		JOptionPane.showMessageDialog (null,"open compare window " + number,"success",JOptionPane.INFORMATION_MESSAGE);
+	    	}//获取数据
+	    	List<Document> documentL = documents.getDocuments ();
+	    	Document docData = null;
+	    	if (documentL != null && !documentL.isEmpty ()) {
+	    	    for (int i = 0; i < documentL.size (); i++) {
+	    	    	Document document = documentL.get (i);
+	    	    	String tempNumber = document.getNumber();
+	    	    	if (StringUtils.equalsIgnoreCase(number, tempNumber)) {
+	    	    		docData = document;
+	    	    		break;
+	    	    	}
+	    	    }
+	    	}
+	    	if (logger.isDebugEnabled()) {
+	    		logger.debug("docData is -> " + docData);
 	    	}
 	    	//open compare
-	    	new BomDetailDialog(new CADMainFrame ()).activate();
+	    	new BomDetailDialog(null,number,((CadDocument)docData.getObject()).getDetail()).activate();
 	    }
 	    
 	}

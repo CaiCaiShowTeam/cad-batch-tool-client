@@ -2,13 +2,9 @@ package com.bplead.cad.ui;
 
 import java.io.File;
 import java.util.Vector;
-
 import javax.swing.JFileChooser;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
 import priv.lee.cad.util.StringUtils;
 
 public class AddLocalFileChooser extends JFileChooser {
@@ -49,7 +45,6 @@ public class AddLocalFileChooser extends JFileChooser {
 						row.add(path);
 						tableModel.addRow(row);
 					}
-
 				}
 			}
 
@@ -58,9 +53,6 @@ public class AddLocalFileChooser extends JFileChooser {
 				tableModel.setValueAt(i + 1, i, 1);
 			}
 			
-			DefaultTableCellRenderer render = new DefaultTableCellRenderer();
-			render.setHorizontalAlignment(SwingConstants.CENTER);
-			table.getColumnModel().getColumn(1).setCellRenderer(render);
 		}
 	}
 }
