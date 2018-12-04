@@ -536,7 +536,7 @@ public class CadTablePanel extends AbstractPanel implements ResourceMapper {
 	MutiTableModel tableModel = new MutiTableModel (columnNames);
 
 	// new jtable
-	mutiTable = new MutiTable ();
+	mutiTable = new MutiTable (documents);
 
 	// set data model
 	mutiTable.setModel (tableModel);

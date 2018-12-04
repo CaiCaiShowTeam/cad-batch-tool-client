@@ -41,8 +41,8 @@ public class ReadToXml {
 
 	public static void main(String[] args) {
 		//test
-		String filePath = "C:\\software\\Release20181103\\图纸\\中望\\CxxxM0000.dwg";
-		String filePath1 = "C:\\Users\\bc\\Desktop\\图纸\\图纸\\中望\\M142B3100.dwg" ;
+		String filePath = "C:\\Users\\bc\\Desktop\\图纸\\中望\\CxxxM0000.dwg";
+		String filePath1 = "C:\\Users\\bc\\Desktop\\图纸\\中望\\M142B3100.dwg" ;
 		filePath = "\"" +  filePath + "\" \"" + filePath1 +"\"";
 		readToXml(filePath);
 	}

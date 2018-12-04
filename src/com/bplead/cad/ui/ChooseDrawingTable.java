@@ -2,31 +2,36 @@ package com.bplead.cad.ui;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.lang.reflect.Field;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import com.bplead.cad.bean.SimpleDocument;
+
 import priv.lee.cad.model.ResourceMap;
 import priv.lee.cad.model.ResourceMapper;
 import priv.lee.cad.model.impl.DefaultResourceMap;
 import priv.lee.cad.util.ClientAssert;
-import priv.lee.cad.util.StringUtils;
-import priv.lee.cad.util.XmlUtils;
 
 public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseListener {
 
 	private static final int FIXED_WIDTH = 5;
 	private static final long serialVersionUID = -5844495101340439741L;
 	private final String COL_HEADER_SUFFIX = "].header";
-	private final String COL_NAME_SUFFIX = "].value.name";
 	private final String COL_TYPE_SUFFIX = "].value.type";
 	private final String COL_WIDTH_SUFFIX = "].proportion.width";
 	private final String COLUMN_TOTAL = "column.total";
-	private List<SimpleDocument> documents;
+	private final String DWGLIST = "dwglist.txt";
 	private final String PREFIX_COL_HEADER = "column[";
 	private ResourceMap resourceMap;
 
@@ -34,34 +39,13 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
 		resourceMap = new DefaultResourceMap(ChooseDrawingTable.class);
 	}
 
-	public ChooseDrawingTable(List<SimpleDocument> documents) {
-		this.documents = documents;
+	public ChooseDrawingTable() {
 		initTable();
 	}
 
 	public void clear() {
 		DefaultTableModel tableModel = (DefaultTableModel) getModel();
 		tableModel.setRowCount(0);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T getCellContent(SimpleDocument product, String name, Class<T> clatt) {
-		if (product == null || StringUtils.isEmpty(name) || clatt == null) {
-			return null;
-		}
-
-		try {
-			Field field = XmlUtils.findField(product.getClass(), name);
-			field.setAccessible(true);
-			return (T) field.get(product);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private String getCellContentName(int column) {
-		return resourceMap.getString(PREFIX_COL_HEADER + column + COL_NAME_SUFFIX);
 	}
 
 	private Class<?> getCellContentType(int column) throws ClassNotFoundException {
@@ -95,33 +79,9 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
 		return new BigDecimal(getParent().getPreferredSize().width).multiply(new BigDecimal(proportion)).intValue();
 	}
 
-	public List<SimpleDocument> getProducts() {
-		return documents;
-	}
-
 	@Override
 	public ResourceMap getResourceMap() {
 		return resourceMap;
-	}
-
-	public SimpleDocument getRowData(int row) {
-		if (documents == null) {
-			return null;
-		}
-		ClientAssert.isTrue(row < documents.size(), "Row out of bounds:" + row);
-		return documents.get(row);
-	}
-
-	public List<SimpleDocument> getSelectedDocuments() {
-		List<SimpleDocument> selectedDocuments = new ArrayList<SimpleDocument>();
-		int rows = getModel().getRowCount();
-		for (int i = 0; i < rows; i++) {
-			Boolean selected = (Boolean) getValueAt(i, 0);
-			if (selected) {
-				selectedDocuments.add(documents.get(i));
-			}
-		}
-		return selectedDocuments;
 	}
 
 	private void initTable() {
@@ -131,11 +91,15 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
 			if (model.findColumn(headers.get(column)) == -1) {
 				model.addColumn(headers.get(column));
 			}
-
-			setRows(model, column);
 		}
+		
+		setRows(model);
 		addMouseListener(this);
-
+		
+		DefaultTableCellRenderer render = new DefaultTableCellRenderer();
+		render.setHorizontalAlignment(SwingConstants.CENTER);
+		getColumnModel().getColumn(1).setCellRenderer(render);
+		
 		invalidate();
 	}
 
@@ -164,11 +128,6 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
 	public void mouseReleased(MouseEvent e) {
 	}
 
-	public void refresh(List<SimpleDocument> documents) {
-		this.documents = documents;
-		initTable();
-	}
-
 	public void setColumnWidth() {
 		for (int column = 0; column < getColumnCount(); column++) {
 			Class<?> cls = getColumnClass(column);
@@ -189,29 +148,61 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
 		this.resourceMap = resourceMap;
 	}
 
-	private void setRows(DefaultTableModel model, int column) {
-		if (documents == null || documents.isEmpty()) {
-			clear();
-			return;
-		}
-
-		for (int row = 0; row < documents.size(); row++) {
-			if (model.getRowCount() <= row) {
-				model.addRow(new Object[] {});
-			}
-
-			try {
-				if (column == 1) {
-					model.setValueAt(String.valueOf(row++), row, column);
-				} else {
-					Object content = getCellContent(documents.get(row), getCellContentName(column),
-							getCellContentType(column));
-					model.setValueAt(content == null ? "" : content, row, column);
-				}
-
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void setRows(DefaultTableModel model) {
+		int rowCount = model.getRowCount();
+    	String path = Class.class.getClass().getResource("/").getPath();
+    	path = path + DWGLIST;
+    	String currentDrawingPath = getCurrentDrawingPath(path);
+    	File file = new File(currentDrawingPath);
+ 
+		Vector row = new Vector();
+		row.add(false);
+		row.add(String.valueOf(++rowCount));
+		row.add(file.getName());
+		row.add(currentDrawingPath);
+		model.addRow(row);
 	}
+	
+	public String getCurrentDrawingPath(String path) {
+    	File file = new File(path);
+    	if(file.exists()) {
+    		try {
+    			FileInputStream fileInputStream = new FileInputStream(file);
+    			String code = getCharset(fileInputStream);
+    			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream,code);
+    			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+    			StringBuffer sb = new StringBuffer();
+    	    	String text = "";
+    			while((text = bufferedReader.readLine())!=null) {
+    				sb.append(text);
+    			}
+    			return sb.toString();
+    		}catch(Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	return "";
+    }
+	
+	private String getCharset(FileInputStream fileInputStream) throws IOException {
+    	int p = (fileInputStream.read()<<8)+ fileInputStream.read();
+    	String code = "";
+    	switch(p) {
+    	case 0xefbb:
+    		code = "UTF-8";
+    		break;
+    	case 0xfffe:
+    		code = "Unicode";
+    		break;
+    	case 0xfeff:
+    		code = "UTF-16BE";
+    		break;
+    	default:
+    		code = "GBK";
+
+    	}
+    	return code;
+    	
+    }
 }

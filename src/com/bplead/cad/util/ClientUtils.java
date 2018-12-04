@@ -233,7 +233,7 @@ public class ClientUtils extends ClientInstanceUtils {
 
     public static BOMInfo getBomDetails(String partNumber) {
 	ClientAssert.isTrue (StringUtils.hasText (partNumber),"PartNumber is requried");
-	return invoke (RemoteMethod.GETPDMINFOS,new Class<?> [] { String.class },new Object [] { partNumber },
+	return invoke (RemoteMethod.GETBOMDETAILS,new Class<?> [] { String.class },new Object [] { partNumber },
 		BOMInfo.class);
     }
 

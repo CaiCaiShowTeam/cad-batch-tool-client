@@ -171,7 +171,7 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 			add(optionPanel);
 			optionPanel.setPreferredSize(new Dimension(60, 20));
 
-			table = new ChooseDrawingTable(null);
+			table = new ChooseDrawingTable();
 			JScrollPane sp = new JScrollPane(table);
 			sp.setPreferredSize(new Dimension((int) (getPreferredSize().width * TABLE_WIDTH_PROPORTION),
 					(int) (getPreferredSize().height * TABLE_HEIGTH_PROPORTION)));
