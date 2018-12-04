@@ -155,7 +155,9 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
     	path = path + DWGLIST;
     	String currentDrawingPath = getCurrentDrawingPath(path);
     	File file = new File(currentDrawingPath);
- 
+    	if(!file.exists()) {
+    		return;
+    	}
 		Vector row = new Vector();
 		row.add(false);
 		row.add(String.valueOf(++rowCount));
