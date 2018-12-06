@@ -92,14 +92,14 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
 				model.addColumn(headers.get(column));
 			}
 		}
-		
+
 		setRows(model);
 		addMouseListener(this);
-		
+
 		DefaultTableCellRenderer render = new DefaultTableCellRenderer();
 		render.setHorizontalAlignment(SwingConstants.CENTER);
 		getColumnModel().getColumn(1).setCellRenderer(render);
-		
+
 		invalidate();
 	}
 
@@ -151,60 +151,66 @@ public class ChooseDrawingTable extends JTable implements ResourceMapper, MouseL
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void setRows(DefaultTableModel model) {
 		int rowCount = model.getRowCount();
-    	String path = Class.class.getClass().getResource("/").getPath();
-    	path = path + DWGLIST;
-    	String currentDrawingPath = getCurrentDrawingPath(path);
-    	File file = new File(currentDrawingPath);
-    	if(!file.exists()) {
-    		return;
-    	}
-		Vector row = new Vector();
-		row.add(false);
-		row.add(String.valueOf(++rowCount));
-		row.add(file.getName());
-		row.add(currentDrawingPath);
-		model.addRow(row);
+		String path = Class.class.getClass().getResource("/").getPath();
+		path = path + DWGLIST;
+		List<String> currentPaths = getCurrentDrawingPath(path);
+		if (currentPaths == null || currentPaths.size() == 0) {
+			return;
+		}
+		for (int i = 0; i < currentPaths.size(); i++) {
+			String currentPath = currentPaths.get(i);
+			File file = new File(currentPath);
+			if (!file.exists()) {
+				continue;
+			}
+			Vector row = new Vector();
+			row.add(false);
+			row.add(String.valueOf(++rowCount));
+			row.add(file.getName());
+			row.add(currentPath);
+			model.addRow(row);
+		}
 	}
-	
-	public String getCurrentDrawingPath(String path) {
-    	File file = new File(path);
-    	if(file.exists()) {
-    		try {
-    			FileInputStream fileInputStream = new FileInputStream(file);
-    			String code = getCharset(fileInputStream);
-    			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream,code);
-    			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-    			StringBuffer sb = new StringBuffer();
-    	    	String text = "";
-    			while((text = bufferedReader.readLine())!=null) {
-    				sb.append(text);
-    			}
-    			return sb.toString();
-    		}catch(Exception e) {
-    			e.printStackTrace();
-    		}
-    	}
-    	return "";
-    }
-	
-	private String getCharset(FileInputStream fileInputStream) throws IOException {
-    	int p = (fileInputStream.read()<<8)+ fileInputStream.read();
-    	String code = "";
-    	switch(p) {
-    	case 0xefbb:
-    		code = "UTF-8";
-    		break;
-    	case 0xfffe:
-    		code = "Unicode";
-    		break;
-    	case 0xfeff:
-    		code = "UTF-16BE";
-    		break;
-    	default:
-    		code = "GBK";
 
-    	}
-    	return code;
-    	
-    }
+	public List<String> getCurrentDrawingPath(String path) {
+		File file = new File(path);
+		if (file.exists()) {
+			try {
+				FileInputStream fileInputStream = new FileInputStream(file);
+				String code = getCharset(fileInputStream);
+				InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, code);
+				BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+				List<String> currentPaths = new ArrayList<String>();
+				String text = "";
+				while ((text = bufferedReader.readLine()) != null) {
+					currentPaths.add(text);
+				}
+				return currentPaths;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	private String getCharset(FileInputStream fileInputStream) throws IOException {
+		int p = (fileInputStream.read() << 8) + fileInputStream.read();
+		String code = "";
+		switch (p) {
+		case 0xefbb:
+			code = "UTF-8";
+			break;
+		case 0xfffe:
+			code = "Unicode";
+			break;
+		case 0xfeff:
+			code = "UTF-16BE";
+			break;
+		default:
+			code = "GBK";
+
+		}
+		return code;
+
+	}
 }
