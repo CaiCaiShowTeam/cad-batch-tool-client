@@ -166,6 +166,7 @@ public class SearchResultTable extends JTable implements ResourceMapper, MouseLi
 
 	public void refresh(List<SimpleDocument> documents) {
 		this.documents = documents;
+		clear();
 		initTable();
 	}
 
@@ -191,7 +192,6 @@ public class SearchResultTable extends JTable implements ResourceMapper, MouseLi
 
 	private void setRows(DefaultTableModel model, int column) {
 		if (documents == null || documents.isEmpty()) {
-			clear();
 			return;
 		}
 
