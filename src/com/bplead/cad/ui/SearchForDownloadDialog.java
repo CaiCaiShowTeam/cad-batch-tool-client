@@ -163,7 +163,7 @@ public class SearchForDownloadDialog extends AbstractDialog implements ActionLis
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			List<SimpleDocument> objects = ClientUtils.search(number.getText().getText(), name.getText().getText());
+			List<SimpleDocument> objects = ClientUtils.search(number.getText().getText().toUpperCase(), name.getText().getText());
 			searchResultPanel.initResultTable(objects);
 		}
 
