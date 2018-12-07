@@ -61,7 +61,7 @@ public class ValidateUtils {
 	    ClientAssert.notEmpty (attachments,buildPromptSuffix (document) + RuntimeExceptionPanel.DELIM +  CustomPrompt.ATTACHMENTS_NULL);
 	    //TODO 校验必填项
 	    String checkPrompt = checkForPrompt (document);
-	    ClientAssert.notNull (checkPrompt,checkPrompt);
+	    ClientAssert.isTrue (StringUtils.isEmpty (checkPrompt),checkPrompt);
 	    
 	    validateSuffix (attachments,buildPromptSuffix (document));
 
