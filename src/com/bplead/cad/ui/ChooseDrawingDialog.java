@@ -8,14 +8,19 @@ import java.awt.LayoutManager;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Arrays;
+
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+
 import org.apache.log4j.Logger;
+
 import com.bplead.cad.util.ReadToXml;
+
 import priv.lee.cad.model.Callback;
 import priv.lee.cad.ui.AbstractDialog;
 import priv.lee.cad.ui.AbstractPanel;
@@ -82,7 +87,11 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 			int rowCount = tableModel.getRowCount();
 			String filePath = "";
 			for (int i = 0; i < rowCount; i++) {
-				String selectPath = "\"" + searchResultPanel.table.getValueAt(i, 3) + "\"";
+				File file = new File((String) searchResultPanel.table.getValueAt(i, 3));
+				if (!file.exists()) {
+					continue;
+				}
+				String selectPath = "\"" + file.getParent() + File.separator + File.separator + file.getName() + "\"";
 				if (StringUtils.isEmpty(filePath)) {
 					filePath = selectPath;
 				} else {
