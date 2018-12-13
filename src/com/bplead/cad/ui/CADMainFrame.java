@@ -29,6 +29,7 @@ import com.bplead.cad.util.ValidateUtils;
 
 import priv.lee.cad.model.Callback;
 import priv.lee.cad.ui.AbstractFrame;
+import priv.lee.cad.ui.Option;
 import priv.lee.cad.util.ClientAssert;
 import priv.lee.cad.util.CollectionUtils;
 import priv.lee.cad.util.PropertiesUtils;
@@ -60,6 +61,8 @@ public class CADMainFrame extends AbstractFrame implements Callback {
 
 	@Override
 	public void call(Object object) {
+		if (Option.DOWNLOAD_BUTTON.equals(ClientUtils.args.getType()))
+			return;
 		reload();
 	}
 

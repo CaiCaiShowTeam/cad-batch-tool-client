@@ -8,6 +8,7 @@ import com.bplead.cad.util.ClientUtils;
 
 import priv.lee.cad.model.ServerClientTemporary;
 import priv.lee.cad.ui.AbstractLoginFrame;
+import priv.lee.cad.ui.Option;
 import priv.lee.cad.util.ClientAssert;
 import priv.lee.cad.util.XmlUtils;
 
@@ -25,7 +26,9 @@ public class LoginFrame extends AbstractLoginFrame {
 			public void run() {
 				if (ClientUtils.StartArguments.CAD.equals(ClientUtils.args.getType())) {
 					new CADMainFrame().activate();
-				} else {
+				}else if(Option.DOWNLOAD_BUTTON.equals(ClientUtils.args.getType())) {
+					new SearchForDownloadDialog(new CADMainFrame ()).activate();
+				}else {
 					throw new RuntimeException("Unsupport start arguments:" + ClientUtils.args);
 				}
 			}

@@ -19,6 +19,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
+import com.bplead.cad.util.ClientUtils;
 import com.bplead.cad.util.ReadToXml;
 
 import priv.lee.cad.model.Callback;
@@ -41,6 +42,7 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 	private static final long serialVersionUID = 1336292047030719519L;
 	private ConfirmPanel confirmPanel;
 	private SearchResultPanel searchResultPanel;
+	private String source = "";
 
 	public ChooseDrawingDialog(Callback container) {
 		super(ChooseDrawingDialog.class, container);
@@ -129,8 +131,19 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 				parent = parent.getParent();
 			}
 			Option confirm = new Option(Option.CONFIRM_BUTTON, null, this);
+			Option download = new Option(Option.DOWNLOAD_BUTTON, null, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					source = Option.DOWNLOAD_BUTTON;
+					Container parent = getParent();
+					while (!(parent instanceof Window)) {
+						parent = parent.getParent();
+					}
+					EventQueue.invokeLater((Runnable) parent);
+				}
+			});
 
-			add(new OptionPanel(Arrays.asList(confirm, Option.newCancelOption((Window) parent))));
+			add(new OptionPanel(Arrays.asList(download, confirm, Option.newCancelOption((Window) parent))));
 		}
 	}
 
@@ -191,6 +204,9 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 
 	@Override
 	public void run() {
+		if (StringUtils.equalsIgnoreCase(Option.DOWNLOAD_BUTTON, source)) {
+			ClientUtils.args.setType(Option.DOWNLOAD_BUTTON);
+		}
 		new LoginFrame().activate();
 		dispose();
 	}
