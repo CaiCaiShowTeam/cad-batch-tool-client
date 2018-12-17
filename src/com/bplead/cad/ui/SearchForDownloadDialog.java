@@ -8,6 +8,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +27,7 @@ import com.bplead.cad.util.ClientUtils;
 import com.bplead.cad.util.FTPUtils;
 
 import priv.lee.cad.model.Callback;
+import priv.lee.cad.model.impl.ComponentResourceMap;
 import priv.lee.cad.ui.AbstractDialog;
 import priv.lee.cad.ui.AbstractPanel;
 import priv.lee.cad.ui.Option;
@@ -98,17 +100,20 @@ public class SearchForDownloadDialog extends AbstractDialog implements ActionLis
 		download(content.getServerFile(), localFile);
 
 		logger.info("unzip file...");
-		return ClientUtils.unzip(localFile);
+		boolean isOpen = new ComponentResourceMap(Option.class.getSimpleName().toLowerCase(), Option.class)
+				.getString(Option.DOWNLOADOPEN_BUTTON).equalsIgnoreCase(getConfirmType());
+		return ClientUtils.unzip(localFile, isOpen);
 	}
 
 	class DownloadSettingPanel extends AbstractPanel implements ActionListener {
 
 		private static final long serialVersionUID = -6481481565984135229L;
 		private final String DOWNLOAD_TO = "downloadTo";
+		private final String DEFAULTDIRECTORY = "defaultDirectory";
 		private final double HEIGHT_PROPORTION = 0.5d;
 		private final double LABEL_PROPORTION = 0.1d;
 		protected PromptTextField setting;
-		private final double TEXT_PROPORTION = 0.5d;
+		private final double TEXT_PROPORTION = 0.4d;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -133,6 +138,7 @@ public class SearchForDownloadDialog extends AbstractDialog implements ActionLis
 					LABEL_PROPORTION, TEXT_PROPORTION, HEIGHT_PROPORTION);
 			setting = PromptTextField.newInstance((getResourceMap().getString(DOWNLOAD_TO)), null, dimension);
 			setting.setLabelAligment(SwingConstants.LEFT);
+			setting.getText().setText(getResourceMap().getString(DEFAULTDIRECTORY));
 			add(setting);
 
 			logger.info("initialize browser option...");
@@ -143,8 +149,9 @@ public class SearchForDownloadDialog extends AbstractDialog implements ActionLis
 				parent = parent.getParent();
 			}
 			Option confirm = new Option(Option.CONFIRM_BUTTON, null, (ActionListener) parent);
+			Option downloadOpen = new Option(Option.DOWNLOADOPEN_BUTTON, null, (ActionListener) parent);
 
-			add(new OptionPanel(Arrays.asList(browse, confirm, Option.newCancelOption((Window) parent))));
+			add(new OptionPanel(Arrays.asList(browse, confirm, downloadOpen, Option.newCancelOption((Window) parent))));
 		}
 	}
 
@@ -163,7 +170,8 @@ public class SearchForDownloadDialog extends AbstractDialog implements ActionLis
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			List<SimpleDocument> objects = ClientUtils.search(number.getText().getText().toUpperCase(), name.getText().getText());
+			List<SimpleDocument> objects = ClientUtils.search(number.getText().getText().toUpperCase(),
+					name.getText().getText());
 			searchResultPanel.initResultTable(objects);
 		}
 
