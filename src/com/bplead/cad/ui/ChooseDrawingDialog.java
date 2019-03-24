@@ -93,7 +93,9 @@ public class ChooseDrawingDialog extends AbstractDialog implements ActionListene
 				if (!file.exists()) {
 					continue;
 				}
-				String selectPath = "\"" + file.getParent() + File.separator + File.separator + file.getName() + "\"";
+				String path = file.getPath();
+				path = path.replaceAll("\\\\", "\\\\\\\\");
+				String selectPath ="\"" +path + "\"";
 				if (StringUtils.isEmpty(filePath)) {
 					filePath = selectPath;
 				} else {
