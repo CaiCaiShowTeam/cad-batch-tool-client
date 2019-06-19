@@ -36,7 +36,7 @@ public class ReadToXml {
 		sb.append(")");
 		sb.append("\n");
 
-		return sb.toString();
+		return sb.toString().replaceAll("\\\\", "\\\\\\\\");
 	}
 
 	public static void main(String[] args) {
